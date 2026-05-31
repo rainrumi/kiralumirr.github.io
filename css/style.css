@@ -196,6 +196,43 @@ h4 {
   color: var(--color-muted);
 }
 
+.profile-heading {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.profile-icon {
+  display: block;
+  width: min(100%, 220px);
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-secondary);
+  box-shadow: var(--shadow-card);
+  object-fit: cover;
+}
+
+.profile-detail-list {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 0;
+}
+
+.profile-detail-list div {
+  display: grid;
+  gap: 4px;
+}
+
+.profile-detail-list dt {
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}
+
+.profile-detail-list dd {
+  margin: 0;
+}
+
 .content-panel,
 .work-card {
   border: 1px solid var(--color-border);

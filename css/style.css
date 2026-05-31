@@ -287,12 +287,11 @@ h4 {
 }
 
 .work-thumbnail {
-  display: grid;
-  min-height: 180px;
-  place-items: center;
-  background: linear-gradient(135deg, rgba(31, 111, 104, 0.14), rgba(215, 154, 43, 0.18));
-  color: var(--color-muted);
-  font-weight: 700;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--color-secondary);
+  object-fit: cover;
 }
 
 .work-body {

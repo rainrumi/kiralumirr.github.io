@@ -284,6 +284,8 @@ h4 {
 
 .work-card {
   overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .work-thumbnail {
@@ -296,6 +298,23 @@ h4 {
 
 .work-body {
   padding: 20px;
+}
+
+.work-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 16px 34px rgba(32, 33, 36, 0.12);
+  transform: translateY(-2px);
+}
+
+.work-card:focus-within {
+  outline: 3px solid rgba(215, 154, 43, 0.65);
+  outline-offset: 3px;
+}
+
+.work-card .work-body a::after {
+  position: absolute;
+  inset: 0;
+  content: "";
 }
 
 .link-list {

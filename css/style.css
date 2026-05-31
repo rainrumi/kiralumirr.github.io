@@ -304,6 +304,7 @@ h4 {
   aspect-ratio: 16 / 10;
   background: var(--color-secondary);
   object-fit: cover;
+  transition: transform 0.25s ease;
 }
 
 .work-body {
@@ -319,6 +320,12 @@ h4 {
 .work-card:focus-within {
   outline: 3px solid rgba(215, 154, 43, 0.65);
   outline-offset: 3px;
+}
+
+.work-card:hover .work-thumbnail,
+.work-card:focus-within .work-thumbnail,
+.work-card:active .work-thumbnail {
+  transform: scale(1.06);
 }
 
 .link-list {

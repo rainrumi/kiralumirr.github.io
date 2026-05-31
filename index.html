@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TODO: サイトタイトル</title>
+  <meta name="description" content="TODO: サイト説明文">
+  <meta property="og:title" content="TODO: サイトタイトル">
+  <meta property="og:description" content="TODO: サイト説明文">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/ogp.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header" id="top">
+    <a class="site-logo" href="index.html">TODO: サイト名</a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">
+      メニューを開く
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="グローバルナビゲーション">
+      <ul class="nav-list">
+        <li><a href="#top">Home</a></li>
+        <li><a href="#profile">Profile</a></li>
+        <li><a href="#works">Works</a></li>
+        <li><a href="#links">Links</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="container hero-layout">
+        <div class="hero-text">
+          <p class="section-label">Portfolio</p>
+          <h1 id="hero-title">TODO: メインタイトル</h1>
+          <p class="hero-subtitle">TODO: サブタイトルを入れる。</p>
+          <p>TODO: サイトの短い説明文を入れる。</p>
+          <div class="button-row">
+            <a class="button-primary" href="#works">作品を見る</a>
+            <a class="button-secondary" href="#links">リンクを見る</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <span>TODO</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block" id="profile" aria-labelledby="profile-title">
+      <div class="container two-column">
+        <div>
+          <p class="section-label">Profile</p>
+          <h2 id="profile-title">TODO: 名前または活動名</h2>
+          <p class="profile-role">TODO: 肩書き</p>
+        </div>
+        <div class="content-panel">
+          <p>TODO: ここにプロフィール文を入れる。</p>
+          <ul class="tag-list" aria-label="活動ジャンル">
+            <li>TODO: 活動ジャンル</li>
+            <li>TODO: 制作ジャンル</li>
+            <li>TODO: 関心分野</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block section-muted" id="works" aria-labelledby="works-title">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Works</p>
+          <h2 id="works-title">作品一覧</h2>
+        </div>
+        <div class="work-grid">
+          <article class="work-card">
+            <div class="work-thumbnail" aria-hidden="true">TODO</div>
+            <div class="work-body">
+              <p class="work-meta">TODO: ジャンル / 公開状態</p>
+              <h3>TODO: 作品タイトル</h3>
+              <p>TODO: 作品説明文を入れる。</p>
+              <a href="#">TODO: 詳細を見る</a>
+            </div>
+          </article>
+          <article class="work-card">
+            <div class="work-thumbnail" aria-hidden="true">TODO</div>
+            <div class="work-body">
+              <p class="work-meta">TODO: ジャンル / 公開状態</p>
+              <h3>TODO: 作品タイトル</h3>
+              <p>TODO: 作品説明文を入れる。</p>
+              <a href="#">TODO: 外部リンクを見る</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block" id="links" aria-labelledby="links-title">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Links</p>
+          <h2 id="links-title">リンク</h2>
+        </div>
+        <ul class="link-list">
+          <li><a href="#">TODO: Xで最新情報を見る</a></li>
+          <li><a href="#">TODO: GitHubでコードを見る</a></li>
+          <li><a href="#">TODO: YouTubeを見る</a></li>
+          <li id="contact"><a href="#">TODO: 連絡先を入れる</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section-block section-muted" aria-labelledby="updates-title">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Updates</p>
+          <h2 id="updates-title">更新履歴</h2>
+        </div>
+        <ol class="update-list">
+          <li><time datetime="2026-06-01">2026-06-01</time> TODO: サイト公開準備</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-layout">
+      <p><small>&copy; TODO: サイト名</small></p>
+      <a href="#top">トップへ戻る</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

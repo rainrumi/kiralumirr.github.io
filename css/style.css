@@ -1,12 +1,12 @@
 :root {
   --color-bg: #031018;
-  --color-surface: rgba(252, 255, 246, 0.78);
-  --color-surface-strong: rgba(255, 255, 250, 0.86);
+  --color-surface: rgba(252, 255, 246, 0.64);
+  --color-surface-strong: rgba(255, 255, 250, 0.76);
   --color-text: #123037;
   --color-muted: #536f65;
   --color-primary: #167b87;
   --color-primary-dark: #052d43;
-  --color-secondary: rgba(232, 249, 213, 0.78);
+  --color-secondary: rgba(232, 249, 213, 0.62);
   --color-accent: #c6d96a;
   --color-leaf: #7cbf3f;
   --color-border: rgba(191, 230, 168, 0.46);
@@ -194,9 +194,9 @@ button:focus-visible {
   padding: 24px;
   border: 1px solid rgba(232, 249, 213, 0.34);
   border-radius: 24px;
-  background: rgba(255, 255, 248, 0.7);
+  background: rgba(255, 255, 248, 0.56);
   box-shadow: 0 24px 70px rgba(0, 7, 16, 0.28);
-  backdrop-filter: blur(14px) saturate(1.08);
+  backdrop-filter: blur(20px) saturate(1.16);
   color: var(--color-text);
 }
 
@@ -219,10 +219,10 @@ button:focus-visible {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background:
-    radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.74) 0 6px, transparent 7px),
-    radial-gradient(circle at 67% 30%, rgba(255, 255, 255, 0.48) 0 4px, transparent 5px),
-    radial-gradient(circle at 79% 64%, rgba(255, 255, 255, 0.52) 0 8px, transparent 9px),
-    linear-gradient(160deg, rgba(255, 255, 248, 0.78), rgba(226, 248, 198, 0.62)),
+    radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.58) 0 6px, transparent 7px),
+    radial-gradient(circle at 67% 30%, rgba(255, 255, 255, 0.34) 0 4px, transparent 5px),
+    radial-gradient(circle at 79% 64%, rgba(255, 255, 255, 0.38) 0 8px, transparent 9px),
+    linear-gradient(160deg, rgba(255, 255, 248, 0.58), rgba(226, 248, 198, 0.44)),
     var(--color-surface);
   box-shadow: var(--shadow-card);
   color: var(--color-muted);
@@ -249,11 +249,11 @@ button:focus-visible {
   top: 18%;
   width: 82px;
   height: 82px;
-  border: 1px solid rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.56);
   border-radius: 50%;
   box-shadow:
-    -96px 66px 0 -28px rgba(255, 255, 255, 0.48),
-    20px 124px 0 -34px rgba(255, 255, 255, 0.52);
+    -96px 66px 0 -28px rgba(255, 255, 255, 0.34),
+    20px 124px 0 -34px rgba(255, 255, 255, 0.38);
   content: "";
 }
 
@@ -261,9 +261,9 @@ button:focus-visible {
   position: relative;
   z-index: 1;
   padding: 7px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.52);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.54);
+  background: rgba(255, 255, 255, 0.36);
   color: var(--color-primary-dark);
 }
 
@@ -378,7 +378,7 @@ h4 {
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
   color: var(--color-text);
-  backdrop-filter: blur(16px) saturate(1.08);
+  backdrop-filter: blur(22px) saturate(1.16);
 }
 
 .content-panel {
@@ -398,7 +398,7 @@ h4 {
   padding: 4px 10px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
-  background: rgba(244, 255, 229, 0.62);
+  background: rgba(244, 255, 229, 0.48);
   font-size: 0.9rem;
 }
 
@@ -433,12 +433,12 @@ h4 {
   right: 14px;
   width: 13px;
   height: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.28);
   box-shadow:
-    -10px 7px 0 -5px rgba(255, 255, 255, 0.54),
-    9px 9px 0 -6px rgba(255, 255, 255, 0.48);
+    -10px 7px 0 -5px rgba(255, 255, 255, 0.4),
+    9px 9px 0 -6px rgba(255, 255, 255, 0.34);
   content: "";
 }
 
@@ -465,8 +465,8 @@ h4 {
 .button-secondary {
   border: 1px solid var(--color-border);
   background:
-    radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.68) 0 7px, transparent 8px),
-    rgba(252, 255, 246, 0.74);
+    radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.5) 0 7px, transparent 8px),
+    rgba(252, 255, 246, 0.58);
   color: var(--color-text);
 }
 
@@ -499,7 +499,7 @@ h4 {
   padding: 8px 14px;
   border: 1px solid var(--color-border);
   border-radius: 16px 20px 16px 20px;
-  background: rgba(252, 255, 246, 0.7);
+  background: rgba(252, 255, 246, 0.56);
   color: var(--color-text);
   text-decoration: none;
 }
@@ -578,8 +578,8 @@ h4 {
   border: 1px solid var(--color-border);
   border-radius: 18px 22px 18px 22px;
   background:
-    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.68) 0 6px, transparent 7px),
-    rgba(252, 255, 246, 0.74);
+    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.5) 0 6px, transparent 7px),
+    rgba(252, 255, 246, 0.58);
   box-shadow: 0 14px 32px rgba(1, 12, 24, 0.24);
   color: var(--color-text);
   text-decoration: none;

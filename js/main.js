@@ -35,6 +35,11 @@ document.querySelectorAll(".work-track").forEach((track) => {
   let visualIndex = cardCount;
   let isAnimating = false;
   let transitionFallbackId = 0;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let dragPointerId = null;
+  let isDragging = false;
+  let suppressClick = false;
 
   sortedCards.forEach((card) => {
     const clone = card.cloneNode(true);
@@ -204,6 +209,70 @@ document.querySelectorAll(".work-track").forEach((track) => {
       showSlide(index);
     });
   });
+
+  marquee.addEventListener("pointerdown", (event) => {
+    if (event.target.closest(".work-slide-button, .work-dots")) {
+      return;
+    }
+
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    dragPointerId = event.pointerId;
+    isDragging = true;
+    marquee.classList.add("is-dragging");
+    marquee.setPointerCapture(event.pointerId);
+  });
+
+  marquee.addEventListener("pointermove", (event) => {
+    if (!isDragging || event.pointerId !== dragPointerId) {
+      return;
+    }
+
+    const horizontalMove = Math.abs(event.clientX - dragStartX);
+    const verticalMove = Math.abs(event.clientY - dragStartY);
+
+    if (horizontalMove > verticalMove && horizontalMove > 8) {
+      event.preventDefault();
+    }
+  });
+
+  const finishDrag = (event) => {
+    if (!isDragging || event.pointerId !== dragPointerId) {
+      return;
+    }
+
+    const horizontalMove = event.clientX - dragStartX;
+    const verticalMove = event.clientY - dragStartY;
+    const shouldSlide = Math.abs(horizontalMove) >= 48 && Math.abs(horizontalMove) > Math.abs(verticalMove);
+
+    isDragging = false;
+    dragPointerId = null;
+    marquee.classList.remove("is-dragging");
+
+    if (marquee.hasPointerCapture(event.pointerId)) {
+      marquee.releasePointerCapture(event.pointerId);
+    }
+
+    if (shouldSlide) {
+      suppressClick = true;
+      showSlide(horizontalMove < 0 ? currentIndex + 1 : currentIndex - 1);
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    }
+  };
+
+  marquee.addEventListener("pointerup", finishDrag);
+  marquee.addEventListener("pointercancel", finishDrag);
+
+  track.addEventListener("click", (event) => {
+    if (!suppressClick) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
 
   workCarousels.push(() => {
     updatePosition(false);

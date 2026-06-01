@@ -532,6 +532,12 @@ h4 {
   overflow: hidden;
   margin-inline: max(-16px, calc((100vw - var(--container-width)) / -2));
   padding: 84px 56px 112px;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.work-marquee.is-dragging {
+  cursor: grabbing;
 }
 
 .work-marquee::before,

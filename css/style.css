@@ -535,19 +535,27 @@ h4 {
   top: 0;
   bottom: 0;
   z-index: 1;
-  width: min(64px, 14vw);
+  width: min(120px, 22vw);
   pointer-events: none;
   content: "";
 }
 
 .work-marquee::before {
   left: 0;
-  background: linear-gradient(90deg, rgba(3, 13, 24, 0.94), transparent);
+  background:
+    radial-gradient(circle at 26% 28%, rgba(238, 255, 255, 0.42) 0 5px, transparent 6px),
+    radial-gradient(circle at 54% 56%, rgba(238, 255, 255, 0.28) 0 8px, transparent 9px),
+    radial-gradient(circle at 18% 78%, rgba(238, 255, 255, 0.32) 0 4px, transparent 5px),
+    linear-gradient(90deg, rgba(3, 13, 24, 0.96), rgba(3, 13, 24, 0.62) 52%, transparent);
 }
 
 .work-marquee::after {
   right: 0;
-  background: linear-gradient(270deg, rgba(3, 13, 24, 0.94), transparent);
+  background:
+    radial-gradient(circle at 74% 24%, rgba(238, 255, 255, 0.42) 0 5px, transparent 6px),
+    radial-gradient(circle at 42% 58%, rgba(238, 255, 255, 0.28) 0 8px, transparent 9px),
+    radial-gradient(circle at 82% 80%, rgba(238, 255, 255, 0.32) 0 4px, transparent 5px),
+    linear-gradient(270deg, rgba(3, 13, 24, 0.96), rgba(3, 13, 24, 0.62) 52%, transparent);
 }
 
 .work-track {
@@ -570,9 +578,17 @@ h4 {
 }
 
 .work-card {
+  --edge-scale: 1;
+  --edge-opacity: 1;
+  --edge-blur: 0px;
+  --hover-offset: 0px;
   flex: 0 0 var(--work-card-width);
   overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  opacity: var(--edge-opacity);
+  filter: blur(var(--edge-blur)) saturate(calc(0.72 + (var(--edge-opacity) * 0.28)));
+  transform: translateY(var(--hover-offset)) scale(var(--edge-scale));
+  transform-origin: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .work-card-link {
@@ -600,9 +616,9 @@ h4 {
 }
 
 .work-card:hover {
+  --hover-offset: -2px;
   border-color: var(--color-primary);
   box-shadow: 0 20px 46px rgba(9, 88, 102, 0.2);
-  transform: translateY(-2px);
 }
 
 .work-card:focus-within {

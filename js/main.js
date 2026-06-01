@@ -223,10 +223,11 @@ function updateWorkCardEdges() {
       const progress = Math.max(0, Math.min(1, edgeDistance / edgeSize));
       const eased = progress * progress * (3 - 2 * progress);
       const scale = 0.74 + eased * 0.26;
+      const cardScale = scale * (card.classList.contains("is-active") ? 1.18 : 1);
       const opacity = eased;
       const blur = (1 - eased) * 2.8;
 
-      card.style.setProperty("--edge-scale", scale.toFixed(3));
+      card.style.setProperty("--card-scale", cardScale.toFixed(3));
       card.style.setProperty("--edge-opacity", opacity.toFixed(3));
       card.style.setProperty("--edge-blur", `${blur.toFixed(2)}px`);
     });

@@ -531,7 +531,7 @@ h4 {
   position: relative;
   overflow: hidden;
   margin-inline: max(-16px, calc((100vw - var(--container-width)) / -2));
-  padding: 8px 56px 54px;
+  padding: 48px 56px 78px;
 }
 
 .work-marquee::before,
@@ -573,10 +573,9 @@ h4 {
 }
 
 .work-card {
-  --edge-scale: 1;
+  --card-scale: 1;
   --edge-opacity: 1;
   --edge-blur: 0px;
-  --active-scale: 1;
   --hover-offset: 0px;
   position: relative;
   z-index: 0;
@@ -584,13 +583,12 @@ h4 {
   overflow: hidden;
   opacity: var(--edge-opacity);
   filter: blur(var(--edge-blur)) saturate(calc(0.72 + (var(--edge-opacity) * 0.28)));
-  transform: translateY(var(--hover-offset)) scale(calc(var(--edge-scale) * var(--active-scale)));
+  transform: translateY(var(--hover-offset)) scale(var(--card-scale));
   transform-origin: center;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .work-card.is-active {
-  --active-scale: 1.14;
   z-index: 1;
   border-color: rgba(198, 217, 106, 0.86);
   box-shadow: 0 28px 62px rgba(9, 88, 102, 0.34);

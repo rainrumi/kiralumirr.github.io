@@ -531,7 +531,7 @@ h4 {
   position: relative;
   overflow: hidden;
   margin-inline: max(-16px, calc((100vw - var(--container-width)) / -2));
-  padding: 48px 56px 78px;
+  padding: 84px 56px 112px;
 }
 
 .work-marquee::before,
@@ -819,7 +819,7 @@ h4 {
   .work-marquee {
     --work-card-width: min(66vw, 280px);
     margin-inline: -16px;
-    padding-inline: 44px;
+    padding: 72px 44px 96px;
   }
 
   .hero-section {

@@ -389,6 +389,7 @@ h4 {
 
 .content-panel,
 .work-card {
+  position: relative;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-surface);
@@ -397,8 +398,31 @@ h4 {
   backdrop-filter: blur(22px) saturate(1.16);
 }
 
+.content-panel::before,
+.work-card::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 84% 16%, rgba(255, 255, 255, 0.56) 0 5px, rgba(255, 255, 255, 0.18) 6px 8px, transparent 9px),
+    radial-gradient(circle at 74% 28%, rgba(224, 255, 255, 0.42) 0 3px, transparent 4px),
+    radial-gradient(circle at 14% 72%, rgba(224, 255, 255, 0.38) 0 4px, transparent 5px),
+    radial-gradient(circle at 24% 84%, rgba(255, 255, 255, 0.42) 0 2px, transparent 3px);
+  content: "";
+  opacity: 0.82;
+  pointer-events: none;
+}
+
+.content-panel > *,
+.work-card-link {
+  position: relative;
+  z-index: 1;
+}
+
 .content-panel {
   padding: 24px;
+  overflow: hidden;
 }
 
 .tag-list {
@@ -583,7 +607,6 @@ h4 {
   --edge-opacity: 1;
   --edge-blur: 0px;
   --hover-offset: 0px;
-  position: relative;
   z-index: 0;
   flex: 0 0 var(--work-card-width);
   overflow: hidden;
@@ -747,7 +770,20 @@ h4 {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+.link-list a::before {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 68% 24%, rgba(255, 255, 255, 0.7) 0 3px, transparent 4px),
+    radial-gradient(circle at 28% 70%, rgba(220, 255, 255, 0.56) 0 2px, transparent 3px);
+  content: "";
+  pointer-events: none;
+}
+
 .link-icon {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 36px;
   height: 36px;

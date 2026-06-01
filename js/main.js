@@ -99,7 +99,9 @@ document.querySelectorAll(".work-track").forEach((track) => {
 
   const updatePosition = (withTransition = true) => {
     const target = visibleCards[visualIndex];
-    const offset = (marquee.clientWidth / 2) - target.offsetLeft - (target.offsetWidth / 2);
+    const marqueeStyle = window.getComputedStyle(marquee);
+    const marqueePaddingLeft = parseFloat(marqueeStyle.paddingLeft) || 0;
+    const offset = (marquee.clientWidth / 2) - marqueePaddingLeft - target.offsetLeft - (target.offsetWidth / 2);
 
     track.style.transition = withTransition ? "" : "none";
     track.style.setProperty("--track-offset", `${Math.round(offset)}px`);

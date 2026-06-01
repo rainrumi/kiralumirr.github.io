@@ -546,9 +546,11 @@ h4 {
   top: 0;
   bottom: 0;
   z-index: 1;
-  width: min(120px, 22vw);
+  width: min(150px, 26vw);
   pointer-events: none;
   content: "";
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 18%, #000 82%, transparent 100%);
 }
 
 .work-marquee::before {
@@ -557,7 +559,7 @@ h4 {
     radial-gradient(circle at 26% 28%, rgba(238, 255, 255, 0.42) 0 5px, transparent 6px),
     radial-gradient(circle at 54% 56%, rgba(238, 255, 255, 0.28) 0 8px, transparent 9px),
     radial-gradient(circle at 18% 78%, rgba(238, 255, 255, 0.32) 0 4px, transparent 5px),
-    linear-gradient(90deg, rgba(3, 13, 24, 0.96), rgba(3, 13, 24, 0.62) 52%, transparent);
+    linear-gradient(90deg, rgba(3, 13, 24, 0.9), rgba(3, 13, 24, 0.54) 58%, transparent);
 }
 
 .work-marquee::after {
@@ -566,7 +568,7 @@ h4 {
     radial-gradient(circle at 74% 24%, rgba(238, 255, 255, 0.42) 0 5px, transparent 6px),
     radial-gradient(circle at 42% 58%, rgba(238, 255, 255, 0.28) 0 8px, transparent 9px),
     radial-gradient(circle at 82% 80%, rgba(238, 255, 255, 0.32) 0 4px, transparent 5px),
-    linear-gradient(270deg, rgba(3, 13, 24, 0.96), rgba(3, 13, 24, 0.62) 52%, transparent);
+    linear-gradient(270deg, rgba(3, 13, 24, 0.9), rgba(3, 13, 24, 0.54) 58%, transparent);
 }
 
 .work-track {

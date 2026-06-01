@@ -210,60 +210,138 @@ document.querySelectorAll(".work-track").forEach((track) => {
     });
   });
 
-  marquee.addEventListener("pointerdown", (event) => {
-    if (event.target.closest(".work-slide-button, .work-dots")) {
+  const isSliderControl = (target) => target instanceof Element && target.closest(".work-slide-button, .work-dots");
+
+  const beginDrag = (event, clientX, clientY, pointerId) => {
+    if (isSliderControl(event.target)) {
       return;
     }
 
-    dragStartX = event.clientX;
-    dragStartY = event.clientY;
-    dragPointerId = event.pointerId;
+    dragStartX = clientX;
+    dragStartY = clientY;
+    dragPointerId = pointerId;
     isDragging = true;
     marquee.classList.add("is-dragging");
-    marquee.setPointerCapture(event.pointerId);
-  });
+  };
 
-  marquee.addEventListener("pointermove", (event) => {
-    if (!isDragging || event.pointerId !== dragPointerId) {
+  const updateDrag = (event, clientX, clientY, pointerId) => {
+    if (!isDragging || pointerId !== dragPointerId) {
       return;
     }
 
-    const horizontalMove = Math.abs(event.clientX - dragStartX);
-    const verticalMove = Math.abs(event.clientY - dragStartY);
+    const horizontalMove = Math.abs(clientX - dragStartX);
+    const verticalMove = Math.abs(clientY - dragStartY);
 
     if (horizontalMove > verticalMove && horizontalMove > 8) {
       event.preventDefault();
     }
-  });
+  };
 
-  const finishDrag = (event) => {
-    if (!isDragging || event.pointerId !== dragPointerId) {
+  const finishDrag = (event, clientX, clientY, pointerId) => {
+    if (!isDragging || pointerId !== dragPointerId) {
       return;
     }
 
-    const horizontalMove = event.clientX - dragStartX;
-    const verticalMove = event.clientY - dragStartY;
+    const horizontalMove = clientX - dragStartX;
+    const verticalMove = clientY - dragStartY;
     const shouldSlide = Math.abs(horizontalMove) >= 48 && Math.abs(horizontalMove) > Math.abs(verticalMove);
 
     isDragging = false;
     dragPointerId = null;
     marquee.classList.remove("is-dragging");
 
-    if (marquee.hasPointerCapture(event.pointerId)) {
-      marquee.releasePointerCapture(event.pointerId);
-    }
-
     if (shouldSlide) {
       suppressClick = true;
       showSlide(horizontalMove < 0 ? currentIndex + 1 : currentIndex - 1);
       window.setTimeout(() => {
         suppressClick = false;
-      }, 0);
+      }, 350);
     }
   };
 
-  marquee.addEventListener("pointerup", finishDrag);
-  marquee.addEventListener("pointercancel", finishDrag);
+  marquee.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+
+    beginDrag(event, event.clientX, event.clientY, event.pointerId);
+
+    if (isDragging && marquee.setPointerCapture) {
+      marquee.setPointerCapture(event.pointerId);
+    }
+  });
+
+  marquee.addEventListener("pointermove", (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+
+    updateDrag(event, event.clientX, event.clientY, event.pointerId);
+  });
+
+  marquee.addEventListener("pointerup", (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+
+    finishDrag(event, event.clientX, event.clientY, event.pointerId);
+
+    if (marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
+      marquee.releasePointerCapture(event.pointerId);
+    }
+  });
+
+  marquee.addEventListener("pointercancel", (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+
+    finishDrag(event, event.clientX, event.clientY, event.pointerId);
+
+    if (marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
+      marquee.releasePointerCapture(event.pointerId);
+    }
+  });
+
+  marquee.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 1) {
+      return;
+    }
+
+    const touch = event.touches[0];
+
+    beginDrag(event, touch.clientX, touch.clientY, touch.identifier);
+  }, { passive: true });
+
+  marquee.addEventListener("touchmove", (event) => {
+    if (event.touches.length !== 1) {
+      return;
+    }
+
+    const touch = event.touches[0];
+
+    updateDrag(event, touch.clientX, touch.clientY, touch.identifier);
+  }, { passive: false });
+
+  marquee.addEventListener("touchend", (event) => {
+    const touch = Array.from(event.changedTouches).find((changedTouch) => changedTouch.identifier === dragPointerId);
+
+    if (!touch) {
+      return;
+    }
+
+    finishDrag(event, touch.clientX, touch.clientY, touch.identifier);
+  });
+
+  marquee.addEventListener("touchcancel", (event) => {
+    const touch = Array.from(event.changedTouches).find((changedTouch) => changedTouch.identifier === dragPointerId);
+
+    if (!touch) {
+      return;
+    }
+
+    finishDrag(event, touch.clientX, touch.clientY, touch.identifier);
+  });
 
   track.addEventListener("click", (event) => {
     if (!suppressClick) {

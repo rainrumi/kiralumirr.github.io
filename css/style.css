@@ -725,11 +725,7 @@ h4 {
   gap: 9px;
   width: fit-content;
   margin: 0 auto;
-  padding: 8px 10px;
-  border: 1px solid rgba(252, 255, 246, 0.22);
-  border-radius: 999px;
-  background: rgba(1, 12, 24, 0.24);
-  box-shadow: 0 14px 34px rgba(1, 12, 24, 0.2);
+  padding: 0;
   list-style: none;
 }
 

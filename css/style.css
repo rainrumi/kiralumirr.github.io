@@ -670,11 +670,6 @@ h4 {
     rgba(252, 255, 246, 0.82);
 }
 
-.work-slide-button:disabled {
-  cursor: default;
-  opacity: 0.34;
-}
-
 .work-slide-button-prev {
   left: 14px;
 }

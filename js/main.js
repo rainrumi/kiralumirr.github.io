@@ -27,10 +27,35 @@ document.querySelectorAll(".work-track").forEach((track) => {
     .forEach((card) => track.append(card));
 
   const sortedCards = Array.from(track.querySelectorAll(".work-card"));
+  const cardCount = sortedCards.length;
   const prevButton = document.createElement("button");
   const nextButton = document.createElement("button");
   const dots = document.createElement("div");
   let currentIndex = 0;
+  let visualIndex = cardCount;
+
+  sortedCards.forEach((card) => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    clone.querySelectorAll("a").forEach((link) => {
+      link.setAttribute("tabindex", "-1");
+    });
+    track.append(clone);
+  });
+
+  sortedCards
+    .slice()
+    .reverse()
+    .forEach((card) => {
+      const clone = card.cloneNode(true);
+      clone.setAttribute("aria-hidden", "true");
+      clone.querySelectorAll("a").forEach((link) => {
+        link.setAttribute("tabindex", "-1");
+      });
+      track.prepend(clone);
+    });
+
+  const visibleCards = Array.from(track.querySelectorAll(".work-card"));
 
   prevButton.className = "work-slide-button work-slide-button-prev";
   prevButton.type = "button";
@@ -59,9 +84,6 @@ document.querySelectorAll(".work-track").forEach((track) => {
   marquee.append(prevButton, nextButton, dots);
 
   const syncDots = () => {
-    prevButton.disabled = currentIndex === 0;
-    nextButton.disabled = currentIndex === sortedCards.length - 1;
-
     dotButtons.forEach((dot, index) => {
       const isActive = index === currentIndex;
       dot.classList.toggle("is-active", isActive);
@@ -69,7 +91,35 @@ document.querySelectorAll(".work-track").forEach((track) => {
     });
   };
 
-  const animateEdgeUpdate = () => {
+  const updatePosition = (withTransition = true) => {
+    const target = visibleCards[visualIndex];
+    const offset = (marquee.clientWidth / 2) - target.offsetLeft - (target.offsetWidth / 2);
+
+    track.style.transition = withTransition ? "" : "none";
+    track.style.setProperty("--track-offset", `${Math.round(offset)}px`);
+    syncDots();
+    updateWorkCardEdges();
+
+    if (!withTransition) {
+      track.offsetHeight;
+      track.style.transition = "";
+    }
+  };
+
+  const normalizeLoopPosition = () => {
+    const normalizedIndex = ((currentIndex % cardCount) + cardCount) % cardCount;
+
+    if (visualIndex < cardCount) {
+      visualIndex += cardCount;
+    } else if (visualIndex >= cardCount * 2) {
+      visualIndex -= cardCount;
+    }
+
+    currentIndex = normalizedIndex;
+    updatePosition(false);
+  };
+
+  const animateEdgeUpdate = (shouldNormalize = false) => {
     const endTime = performance.now() + 420;
 
     const tick = () => {
@@ -77,6 +127,8 @@ document.querySelectorAll(".work-track").forEach((track) => {
 
       if (performance.now() < endTime) {
         requestAnimationFrame(tick);
+      } else if (shouldNormalize) {
+        normalizeLoopPosition();
       }
     };
 
@@ -84,14 +136,12 @@ document.querySelectorAll(".work-track").forEach((track) => {
   };
 
   const showSlide = (nextIndex) => {
-    currentIndex = Math.max(0, Math.min(nextIndex, sortedCards.length - 1));
+    const difference = nextIndex - currentIndex;
 
-    const target = sortedCards[currentIndex];
-    const offset = (marquee.clientWidth / 2) - target.offsetLeft - (target.offsetWidth / 2);
-
-    track.style.setProperty("--track-offset", `${Math.round(offset)}px`);
-    syncDots();
-    animateEdgeUpdate();
+    currentIndex = ((nextIndex % cardCount) + cardCount) % cardCount;
+    visualIndex += difference;
+    updatePosition(true);
+    animateEdgeUpdate(visualIndex < cardCount || visualIndex >= cardCount * 2);
   };
 
   prevButton.addEventListener("click", () => {
@@ -109,9 +159,9 @@ document.querySelectorAll(".work-track").forEach((track) => {
   });
 
   workCarousels.push(() => {
-    showSlide(currentIndex);
+    updatePosition(false);
   });
-  showSlide(0);
+  updatePosition(false);
 });
 
 function updateWorkCardEdges() {

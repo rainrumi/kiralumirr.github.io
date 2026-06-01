@@ -33,6 +33,8 @@ document.querySelectorAll(".work-track").forEach((track) => {
   const dots = document.createElement("div");
   let currentIndex = 0;
   let visualIndex = cardCount;
+  let isAnimating = false;
+  let transitionFallbackId = 0;
 
   sortedCards.forEach((card) => {
     const clone = card.cloneNode(true);
@@ -119,7 +121,7 @@ document.querySelectorAll(".work-track").forEach((track) => {
     updatePosition(false);
   };
 
-  const animateEdgeUpdate = (shouldNormalize = false) => {
+  const animateEdgeUpdate = () => {
     const endTime = performance.now() + 420;
 
     const tick = () => {
@@ -127,21 +129,60 @@ document.querySelectorAll(".work-track").forEach((track) => {
 
       if (performance.now() < endTime) {
         requestAnimationFrame(tick);
-      } else if (shouldNormalize) {
-        normalizeLoopPosition();
       }
     };
 
     tick();
   };
 
+  const finishMovement = (shouldNormalize) => {
+    window.clearTimeout(transitionFallbackId);
+    isAnimating = false;
+
+    if (shouldNormalize) {
+      normalizeLoopPosition();
+    } else {
+      updateWorkCardEdges();
+    }
+  };
+
+  const waitForMovement = (shouldNormalize) => {
+    const onTransitionEnd = (event) => {
+      if (event.target !== track || event.propertyName !== "transform") {
+        return;
+      }
+
+      track.removeEventListener("transitionend", onTransitionEnd);
+      finishMovement(shouldNormalize);
+    };
+
+    track.addEventListener("transitionend", onTransitionEnd);
+    transitionFallbackId = window.setTimeout(() => {
+      track.removeEventListener("transitionend", onTransitionEnd);
+      finishMovement(shouldNormalize);
+    }, 560);
+  };
+
   const showSlide = (nextIndex) => {
-    const difference = nextIndex - currentIndex;
+    if (isAnimating) {
+      return;
+    }
+
+    let difference = nextIndex - currentIndex;
+
+    if (difference > cardCount / 2) {
+      difference -= cardCount;
+    } else if (difference < cardCount / -2) {
+      difference += cardCount;
+    }
 
     currentIndex = ((nextIndex % cardCount) + cardCount) % cardCount;
     visualIndex += difference;
+    isAnimating = true;
+
     updatePosition(true);
-    animateEdgeUpdate(visualIndex < cardCount || visualIndex >= cardCount * 2);
+    animateEdgeUpdate();
+    waitForMovement(visualIndex < cardCount || visualIndex >= cardCount * 2);
   };
 
   prevButton.addEventListener("click", () => {

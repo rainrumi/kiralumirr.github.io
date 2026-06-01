@@ -808,7 +808,7 @@ h4 {
   }
 
   .work-marquee {
-    --work-card-width: min(78vw, 300px);
+    --work-card-width: min(66vw, 280px);
     margin-inline: -16px;
     padding-inline: 44px;
   }

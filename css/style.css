@@ -481,12 +481,6 @@ h4 {
   color: var(--color-text);
 }
 
-.work-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
 .work-group + .work-group {
   margin-top: 40px;
 }
@@ -526,7 +520,57 @@ h4 {
   height: 11px;
 }
 
+.work-marquee {
+  --work-card-width: clamp(240px, 38vw, 340px);
+  --work-card-gap: 20px;
+  position: relative;
+  overflow: hidden;
+  margin-inline: max(-16px, calc((100vw - var(--container-width)) / -2));
+  padding: 8px 16px 28px;
+}
+
+.work-marquee::before,
+.work-marquee::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: min(64px, 14vw);
+  pointer-events: none;
+  content: "";
+}
+
+.work-marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(3, 13, 24, 0.94), transparent);
+}
+
+.work-marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(3, 13, 24, 0.94), transparent);
+}
+
+.work-track {
+  display: flex;
+  width: max-content;
+  gap: var(--work-card-gap);
+}
+
+.work-track.is-looping {
+  animation: work-slide 34s linear infinite;
+}
+
+.work-group:nth-of-type(2) .work-track.is-looping {
+  animation-duration: 30s;
+}
+
+.work-marquee:hover .work-track,
+.work-marquee:focus-within .work-track {
+  animation-play-state: paused;
+}
+
 .work-card {
+  flex: 0 0 var(--work-card-width);
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
@@ -570,6 +614,16 @@ h4 {
 .work-card:focus-within .work-thumbnail,
 .work-card:active .work-thumbnail {
   transform: scale(1.06);
+}
+
+@keyframes work-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - (var(--work-card-gap) / 2)));
+  }
 }
 
 .link-list {
@@ -669,9 +723,13 @@ h4 {
 
   .hero-layout,
   .two-column,
-  .work-grid,
   .link-list {
     grid-template-columns: 1fr;
+  }
+
+  .work-marquee {
+    --work-card-width: min(78vw, 300px);
+    margin-inline: -16px;
   }
 
   .hero-section {
@@ -695,5 +753,22 @@ h4 {
 @media (min-width: 768px) and (max-width: 1023px) {
   .link-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-track {
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    animation: none;
+  }
+
+  .work-track .work-card {
+    scroll-snap-align: start;
+  }
+
+  .work-track .work-card[aria-hidden="true"] {
+    display: none;
   }
 }

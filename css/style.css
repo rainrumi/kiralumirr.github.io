@@ -442,7 +442,6 @@ h4 {
 .button-primary::before,
 .button-secondary::before,
 .menu-button::before,
-.link-list a::before,
 .work-source-heading a::before {
   position: absolute;
   top: -7px;
@@ -458,8 +457,7 @@ h4 {
   content: "";
 }
 
-.button-secondary::before,
-.link-list a::before {
+.button-secondary::before {
   right: auto;
   left: 15px;
 }
@@ -732,7 +730,10 @@ h4 {
 
 .link-list a {
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   min-height: 56px;
   padding: 14px 16px;
   border: 1px solid var(--color-border);
@@ -743,6 +744,23 @@ h4 {
   box-shadow: 0 14px 32px rgba(1, 12, 24, 0.24);
   color: var(--color-text);
   text-decoration: none;
+}
+
+.link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.link-title {
+  font-weight: 700;
 }
 
 .link-list a:hover {

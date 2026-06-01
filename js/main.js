@@ -86,6 +86,10 @@ document.querySelectorAll(".work-track").forEach((track) => {
   marquee.append(prevButton, nextButton, dots);
 
   const syncDots = () => {
+    visibleCards.forEach((card, index) => {
+      card.classList.toggle("is-active", index === visualIndex);
+    });
+
     dotButtons.forEach((dot, index) => {
       const isActive = index === currentIndex;
       dot.classList.toggle("is-active", isActive);

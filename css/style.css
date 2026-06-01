@@ -576,14 +576,21 @@ h4 {
   --edge-scale: 1;
   --edge-opacity: 1;
   --edge-blur: 0px;
+  --active-scale: 1;
   --hover-offset: 0px;
   flex: 0 0 var(--work-card-width);
   overflow: hidden;
   opacity: var(--edge-opacity);
   filter: blur(var(--edge-blur)) saturate(calc(0.72 + (var(--edge-opacity) * 0.28)));
-  transform: translateY(var(--hover-offset)) scale(var(--edge-scale));
+  transform: translateY(var(--hover-offset)) scale(calc(var(--edge-scale) * var(--active-scale)));
   transform-origin: center;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.work-card.is-active {
+  --active-scale: 1.06;
+  border-color: rgba(198, 217, 106, 0.86);
+  box-shadow: 0 24px 54px rgba(9, 88, 102, 0.28);
 }
 
 .work-card-link {

@@ -493,7 +493,7 @@ h4 {
 }
 
 .work-group + .work-group {
-  margin-top: 40px;
+  margin-top: 72px;
 }
 
 .work-source-heading {
@@ -507,6 +507,7 @@ h4 {
 .work-source-heading h3 {
   margin: 0;
   color: #edf8ee;
+  font-size: clamp(1.45rem, 3vw, 1.8rem);
 }
 
 .work-source-link-row {

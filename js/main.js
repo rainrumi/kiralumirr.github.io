@@ -11,6 +11,14 @@ if (menuButton && siteNav) {
   });
 }
 
+if (menuButton && siteNav) {
+  menuButton.setAttribute("aria-label", "Menu");
+
+  menuButton.addEventListener("click", () => {
+    menuButton.setAttribute("aria-label", siteNav.classList.contains("is-open") ? "Close menu" : "Menu");
+  });
+}
+
 const workMarquees = document.querySelectorAll(".work-marquee");
 const workCarousels = [];
 

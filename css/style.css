@@ -470,7 +470,7 @@ h4 {
 .work-source-link-row {
   display: flex;
   justify-content: flex-end;
-  margin-top: -72px;
+  margin-top: 12px;
   padding-right: 2px;
 }
 

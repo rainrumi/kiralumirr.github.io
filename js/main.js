@@ -392,3 +392,46 @@ window.addEventListener("resize", () => {
     updateCarousel();
   });
 });
+
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+if (!prefersReducedMotion.matches) {
+  const bubbleLayer = document.createElement("div");
+  const maxBubbles = 18;
+
+  bubbleLayer.className = "bubble-layer";
+  bubbleLayer.setAttribute("aria-hidden", "true");
+  document.body.prepend(bubbleLayer);
+
+  const createBubble = () => {
+    if (bubbleLayer.childElementCount >= maxBubbles) {
+      bubbleLayer.firstElementChild?.remove();
+    }
+
+    const bubble = document.createElement("span");
+    const isLeftSide = Math.random() < 0.5;
+    const edgeOffset = Math.round(12 + Math.random() * 82);
+    const size = Math.round(5 + Math.random() * 10);
+    const drift = Math.round((Math.random() * 34 + 8) * (isLeftSide ? 1 : -1));
+    const duration = (14 + Math.random() * 9).toFixed(2);
+    const opacity = (0.16 + Math.random() * 0.12).toFixed(2);
+
+    bubble.className = "water-bubble";
+    bubble.style.setProperty("--bubble-left", isLeftSide ? `${edgeOffset}px` : `calc(100% - ${edgeOffset}px)`);
+    bubble.style.setProperty("--bubble-size", `${size}px`);
+    bubble.style.setProperty("--bubble-drift", `${drift}px`);
+    bubble.style.setProperty("--bubble-duration", `${duration}s`);
+    bubble.style.setProperty("--bubble-opacity", opacity);
+    bubble.addEventListener("animationend", () => {
+      bubble.remove();
+    });
+
+    bubbleLayer.append(bubble);
+  };
+
+  for (let index = 0; index < 6; index += 1) {
+    window.setTimeout(createBubble, index * 460);
+  }
+
+  window.setInterval(createBubble, 1300);
+}

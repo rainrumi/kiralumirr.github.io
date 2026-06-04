@@ -463,11 +463,39 @@ h4 {
     -10px 7px 0 -5px rgba(255, 255, 255, 0.4),
     9px 9px 0 -6px rgba(255, 255, 255, 0.34);
   content: "";
+  pointer-events: none;
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 .button-secondary::before {
   right: auto;
   left: 15px;
+}
+
+.button-primary:hover::before,
+.button-secondary:hover::before,
+.work-source-link:hover::before {
+  animation: button-bubble-rise 0.9s linear forwards;
+}
+
+@keyframes button-bubble-rise {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  24% {
+    opacity: 0.86;
+  }
+
+  78% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(8px, -44px, 0) scale(1.08);
+  }
 }
 
 .button-primary {
@@ -1042,6 +1070,12 @@ h4 {
 @media (prefers-reduced-motion: reduce) {
   .bubble-layer {
     display: none;
+  }
+
+  .button-primary:hover::before,
+  .button-secondary:hover::before,
+  .work-source-link:hover::before {
+    animation: none;
   }
 
   .work-track {

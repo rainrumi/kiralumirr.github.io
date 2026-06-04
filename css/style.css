@@ -446,6 +446,7 @@ h4 {
   box-shadow: 0 12px 26px rgba(1, 12, 24, 0.28);
   font-weight: 700;
   text-decoration: none;
+  transform: translate3d(0, 0, 0);
 }
 
 .button-primary::before,
@@ -478,6 +479,13 @@ h4 {
   animation: button-bubble-rise 0.9s linear forwards;
 }
 
+.button-primary:hover,
+.button-primary:focus-visible,
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  animation: water-button-wobble 1.35s ease-in-out infinite;
+}
+
 @keyframes button-bubble-rise {
   0% {
     opacity: 1;
@@ -495,6 +503,29 @@ h4 {
   100% {
     opacity: 0;
     transform: translate3d(8px, -44px, 0) scale(1.08);
+  }
+}
+
+@keyframes water-button-wobble {
+  0%,
+  100% {
+    border-radius: 18px 22px 18px 22px;
+    transform: translate3d(0, 0, 0) scale(1) skewX(0deg);
+  }
+
+  28% {
+    border-radius: 22px 17px 23px 18px;
+    transform: translate3d(0, -1px, 0) scale(1.012, 0.988) skewX(-1.4deg);
+  }
+
+  58% {
+    border-radius: 17px 24px 18px 23px;
+    transform: translate3d(0, 1px, 0) scale(0.99, 1.01) skewX(1.2deg);
+  }
+
+  82% {
+    border-radius: 21px 19px 22px 17px;
+    transform: translate3d(0, -0.5px, 0) scale(1.006, 0.996) skewX(-0.7deg);
   }
 }
 
@@ -581,7 +612,34 @@ h4 {
     0 16px 34px rgba(0, 8, 18, 0.3),
     0 0 34px rgba(188, 246, 255, 0.24);
   color: #ffffff;
-  transform: translateY(-1px);
+  animation: source-link-wobble 1.45s ease-in-out infinite;
+}
+
+.work-source-link:focus-visible {
+  animation: source-link-wobble 1.45s ease-in-out infinite;
+}
+
+@keyframes source-link-wobble {
+  0%,
+  100% {
+    border-radius: 24px 28px 22px 30px;
+    transform: translate3d(0, -1px, 0) scale(1) skewX(0deg);
+  }
+
+  30% {
+    border-radius: 29px 22px 27px 24px;
+    transform: translate3d(0, -2px, 0) scale(1.01, 0.99) skewX(-1.1deg);
+  }
+
+  62% {
+    border-radius: 22px 31px 23px 28px;
+    transform: translate3d(0, 0, 0) scale(0.992, 1.008) skewX(0.9deg);
+  }
+
+  84% {
+    border-radius: 27px 24px 29px 22px;
+    transform: translate3d(0, -1.5px, 0) scale(1.004, 0.998) skewX(-0.5deg);
+  }
 }
 
 .work-source-link::before {
@@ -1075,6 +1133,15 @@ h4 {
   .button-primary:hover::before,
   .button-secondary:hover::before,
   .work-source-link:hover::before {
+    animation: none;
+  }
+
+  .button-primary:hover,
+  .button-primary:focus-visible,
+  .button-secondary:hover,
+  .button-secondary:focus-visible,
+  .work-source-link:hover,
+  .work-source-link:focus-visible {
     animation: none;
   }
 

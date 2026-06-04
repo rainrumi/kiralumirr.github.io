@@ -474,64 +474,11 @@ h4 {
   left: 5px;
 }
 
-.button-primary:hover::before,
-.button-primary:focus-visible::before,
-.button-secondary:hover::before,
-.button-secondary:focus-visible::before,
-.work-source-link:hover::before,
-.work-source-link:focus-visible::before {
-  animation: button-air-bubbles 1.6s ease-in-out infinite;
-}
-
 .button-primary:hover,
 .button-primary:focus-visible,
 .button-secondary:hover,
 .button-secondary:focus-visible {
   animation: water-button-wobble 2.7s ease-in-out infinite;
-}
-
-@keyframes button-air-bubbles {
-  0% {
-    opacity: 0.64;
-    background-position:
-      0 18px,
-      0 22px,
-      0 26px,
-      0 30px,
-      0 34px;
-    transform: translate3d(0, 8px, 0) scale(0.82);
-  }
-
-  28% {
-    opacity: 1;
-    background-position:
-      2px 6px,
-      -3px 9px,
-      4px 12px,
-      -1px 15px,
-      3px 18px;
-  }
-
-  64% {
-    opacity: 0.82;
-    background-position:
-      -3px -10px,
-      4px -5px,
-      -5px 0,
-      5px 4px,
-      -2px 8px;
-  }
-
-  100% {
-    opacity: 0;
-    background-position:
-      5px -30px,
-      -6px -24px,
-      7px -18px,
-      -4px -12px,
-      3px -6px;
-    transform: translate3d(0, -10px, 0) scale(1.08);
-  }
 }
 
 @keyframes water-button-wobble {
@@ -1170,15 +1117,6 @@ h4 {
 @media (prefers-reduced-motion: reduce) {
   .bubble-layer {
     display: none;
-  }
-
-  .button-primary:hover::before,
-  .button-primary:focus-visible::before,
-  .button-secondary:hover::before,
-  .button-secondary:focus-visible::before,
-  .work-source-link:hover::before,
-  .work-source-link:focus-visible::before {
-    animation: none;
   }
 
   .button-primary:hover,

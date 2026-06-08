@@ -26,6 +26,70 @@ function wrapButtonLabel(button) {
   button.append(label);
 }
 
+function superellipsePoint(angle, width, height, radiusPower) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const x = Math.sign(cos) * Math.abs(cos) ** (2 / radiusPower) * width;
+  const y = Math.sign(sin) * Math.abs(sin) ** (2 / radiusPower) * height;
+
+  return new THREE.Vector3(x, y, 0);
+}
+
+function buildWaterRimGeometry(width, height, time, seed, isHovering) {
+  const segments = 120;
+  const positions = [];
+  const colors = [];
+  const indices = [];
+  const radiusPower = 4.8;
+  const outerWidth = width * 0.92;
+  const outerHeight = height * 0.74;
+  const baseThickness = 0.035 + (isHovering ? 0.014 : 0);
+
+  for (let index = 0; index < segments; index += 1) {
+    const angle = (index / segments) * Math.PI * 2;
+    const point = superellipsePoint(angle, outerWidth, outerHeight, radiusPower);
+    const nextPoint = superellipsePoint(angle + 0.01, outerWidth, outerHeight, radiusPower);
+    const tangent = nextPoint.clone().sub(point).normalize();
+    const normal = new THREE.Vector3(-tangent.y, tangent.x, 0).normalize();
+    const waterWave = prefersReducedMotion.matches
+      ? 0
+      : Math.sin(angle * 5 + time * 1.45 + seed) * 0.026
+        + Math.sin(angle * 9 - time * 1.1 + seed * 0.7) * 0.012;
+    const thicknessWave = prefersReducedMotion.matches
+      ? 0
+      : Math.sin(angle * 7 - time * 1.25 + seed) * 0.01;
+    const depthWave = prefersReducedMotion.matches
+      ? 0
+      : Math.sin(angle * 3 + time * 0.9 + seed) * 0.05;
+    const outer = point.clone().add(normal.clone().multiplyScalar(waterWave));
+    const inner = point.clone().add(normal.clone().multiplyScalar(-(baseThickness + thicknessWave)));
+    const color = new THREE.Color().setHSL(0.5 + Math.sin(angle + seed) * 0.045, 0.72, 0.78);
+
+    outer.z = depthWave;
+    inner.z = depthWave - 0.02;
+    positions.push(outer.x, outer.y, outer.z, inner.x, inner.y, inner.z);
+    colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
+  }
+
+  for (let index = 0; index < segments; index += 1) {
+    const nextIndex = (index + 1) % segments;
+    const outerIndex = index * 2;
+    const innerIndex = outerIndex + 1;
+    const nextOuterIndex = nextIndex * 2;
+    const nextInnerIndex = nextOuterIndex + 1;
+
+    indices.push(outerIndex, nextOuterIndex, innerIndex, innerIndex, nextOuterIndex, nextInnerIndex);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setIndex(indices);
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.computeVertexNormals();
+
+  return geometry;
+}
+
 function createBubbleButton(button) {
   if (!button.querySelector(".bubble-button-label")) {
     wrapButtonLabel(button);
@@ -52,64 +116,34 @@ function createBubbleButton(button) {
     return;
   }
 
+  renderer.setClearColor(0x000000, 0);
+
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 20);
-  const light = new THREE.Group();
-  const bubbleGeometry = new THREE.SphereGeometry(1, 64, 32);
-  const bubbleMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xdffbff,
-    roughness: 0.05,
-    metalness: 0,
-    transmission: 0.78,
-    thickness: 0.82,
-    ior: 1.33,
+  const camera = new THREE.PerspectiveCamera(18, 1, 0.1, 20);
+  const material = new THREE.MeshBasicMaterial({
     transparent: true,
-    opacity: 0.48,
-    clearcoat: 1,
-    clearcoatRoughness: 0.03,
-    iridescence: 0.72,
-    iridescenceIOR: 1.35,
-    iridescenceThicknessRange: [120, 520],
+    opacity: 0.82,
+    vertexColors: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.NormalBlending,
   });
-  const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
-  const rim = new THREE.Mesh(
-    bubbleGeometry,
-    new THREE.MeshBasicMaterial({
-      color: 0xf7ffff,
-      transparent: true,
-      opacity: 0.22,
-      wireframe: true,
-    })
-  );
+  const rim = new THREE.Mesh(new THREE.BufferGeometry(), material);
+  const seed = Math.random() * Math.PI * 2;
 
-  camera.position.z = 5.2;
-
-  light.add(new THREE.AmbientLight(0xffffff, 1.4));
-
-  const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
-  keyLight.position.set(-2.2, 2.4, 4);
-  light.add(keyLight);
-
-  const cyanLight = new THREE.PointLight(0x8cf5ff, 3.2, 8);
-  cyanLight.position.set(2.1, -0.8, 3.4);
-  light.add(cyanLight);
-
-  const limeLight = new THREE.PointLight(0xf3ffbd, 2.2, 8);
-  limeLight.position.set(-2.4, -1.8, 2.8);
-  light.add(limeLight);
-
-  bubble.scale.set(1.82, 0.68, 0.34);
-  rim.scale.copy(bubble.scale).multiplyScalar(1.012);
-  scene.add(light, bubble, rim);
+  camera.position.z = 6;
+  scene.add(rim);
 
   const state = {
     button,
-    bubble,
     camera,
+    heightScale: 0.42,
     renderer,
     rim,
     scene,
-    start: performance.now() + Math.random() * 1000,
+    seed,
+    start: performance.now(),
+    widthScale: 1.65,
   };
 
   renderers.push(state);
@@ -121,26 +155,27 @@ function resizeBubble(state) {
   const rect = state.button.getBoundingClientRect();
   const width = Math.max(1, Math.round(rect.width));
   const height = Math.max(1, Math.round(rect.height));
+  const aspect = width / height;
 
+  state.widthScale = Math.max(1.1, aspect * 0.82);
+  state.heightScale = 0.62;
   state.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   state.renderer.setSize(width, height, false);
-  state.camera.aspect = width / height;
+  state.camera.aspect = aspect;
   state.camera.updateProjectionMatrix();
 }
 
 function render(time) {
   renderers.forEach((state) => {
     const progress = (time - state.start) / 1000;
-    const hover = state.button.matches(":hover, :focus-visible") ? 1 : 0;
-    const wobble = prefersReducedMotion.matches ? 0 : Math.sin(progress * 1.7) * 0.035;
-    const hoverLift = hover * 0.07;
+    const isHovering = state.button.matches(":hover, :focus-visible");
+    const geometry = buildWaterRimGeometry(state.widthScale, state.heightScale, progress, state.seed, isHovering);
 
-    state.bubble.rotation.x = -0.16 + wobble;
-    state.bubble.rotation.y = Math.sin(progress * 0.72) * 0.16;
-    state.bubble.rotation.z = Math.sin(progress * 0.9) * 0.035;
-    state.bubble.scale.set(1.82 + hoverLift, 0.68 + hoverLift * 0.32, 0.34);
-    state.rim.rotation.copy(state.bubble.rotation);
-    state.rim.scale.copy(state.bubble.scale).multiplyScalar(1.012);
+    state.rim.geometry.dispose();
+    state.rim.geometry = geometry;
+    state.rim.rotation.x = prefersReducedMotion.matches ? 0 : Math.sin(progress * 0.7 + state.seed) * 0.035;
+    state.rim.rotation.y = prefersReducedMotion.matches ? 0 : Math.sin(progress * 0.55 + state.seed) * 0.08;
+    state.rim.material.opacity = isHovering ? 0.96 : 0.82;
     state.renderer.render(state.scene, state.camera);
   });
 

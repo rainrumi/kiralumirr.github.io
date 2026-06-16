@@ -27,13 +27,24 @@ function wrapButtonLabel(button) {
 }
 
 function buildWaterSurfaceGeometry(width, height, time, seed, isHovering) {
-  const columns = 42;
-  const rows = 18;
+  const columns = 56;
+  const rows = 24;
   const positions = [];
   const colors = [];
   const indices = [];
-  const waveAmount = isHovering ? 1.25 : 0.86;
-  const edgeFalloffStart = 0.68;
+  const waveAmount = isHovering ? 1.18 : 0.72;
+  const edgeFalloffStart = 0.62;
+
+  const edgeWaveAt = (xRatio, yRatio) => {
+    const angle = Math.atan2(yRatio, xRatio);
+    const perimeterNoise =
+      Math.sin(angle * 3.1 + time * 1.16 + seed) * 0.46
+      + Math.sin(angle * 5.7 - time * 0.74 + seed * 1.83) * 0.32
+      + Math.sin(angle * 9.4 + time * 0.52 + seed * 0.41) * 0.22
+      + Math.sin((xRatio * 7.8) - (yRatio * 4.3) + time * 0.88 + seed * 2.17) * 0.2;
+
+    return perimeterNoise * 0.032 * waveAmount;
+  };
 
   for (let row = 0; row <= rows; row += 1) {
     const v = row / rows;
@@ -42,7 +53,7 @@ function buildWaterSurfaceGeometry(width, height, time, seed, isHovering) {
     for (let column = 0; column <= columns; column += 1) {
       const u = column / columns;
       const xRatio = u * 2 - 1;
-      const edgeDistance = Math.max(Math.abs(xRatio), Math.abs(yRatio));
+      const edgeDistance = ((Math.abs(xRatio) ** 3.4) + (Math.abs(yRatio) ** 3.4)) ** (1 / 3.4);
       const rawEdgeDepth = Math.max(0, (edgeDistance - edgeFalloffStart) / (1 - edgeFalloffStart));
       const edgeDepth = rawEdgeDepth * rawEdgeDepth * (3 - 2 * rawEdgeDepth);
       const centerPlane = 1 - Math.min(1, rawEdgeDepth);
@@ -53,14 +64,18 @@ function buildWaterSurfaceGeometry(width, height, time, seed, isHovering) {
           + Math.sin((yRatio * 8.4) - (time * 1.05) + seed * 0.6)
           + Math.sin(((xRatio + yRatio) * 5.2) + (time * 0.78) + seed * 1.3)
         ) * 0.012 * waveAmount;
+      const edgeWave = prefersReducedMotion.matches ? 0 : edgeWaveAt(xRatio, yRatio) * edgeDepth;
       const edgeRipple = prefersReducedMotion.matches
         ? 0
-        : Math.sin((xRatio - yRatio) * 10 + time * 1.45 + seed) * 0.018 * edgeDepth;
-      const shrink = 1 - edgeDepth * 0.16;
+        : (
+          Math.sin((xRatio - yRatio) * 10.7 + time * 1.45 + seed) * 0.014
+          + Math.sin((xRatio + yRatio) * 14.3 - time * 0.82 + seed * 1.37) * 0.01
+        ) * edgeDepth;
+      const shrink = 1 - edgeDepth * 0.12 + edgeWave;
       const x = xRatio * width * shrink;
-      const y = yRatio * height * shrink;
-      const z = (ripple * centerPlane) + edgeRipple - edgeDepth * 0.34;
-      const light = 0.58 + centerPlane * 0.16 + Math.sin((xRatio * 9) + (time * 0.9) + seed) * 0.035;
+      const y = yRatio * height * (shrink + edgeWave * 0.38);
+      const z = (ripple * centerPlane) + edgeRipple - edgeDepth * 0.3;
+      const light = 0.58 + centerPlane * 0.16 + Math.sin((xRatio * 9) + (time * 0.9) + seed) * 0.035 + edgeDepth * 0.06;
       const saturation = 0.62 + edgeDepth * 0.16;
       const hue = 0.51 + Math.sin((xRatio - yRatio) * 2 + seed) * 0.018;
       const color = new THREE.Color().setHSL(hue, saturation, light);

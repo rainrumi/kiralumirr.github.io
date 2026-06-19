@@ -21,8 +21,10 @@
   --font-deco: "Kaisei Decol", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-kaku: "Zen Kaku Gothic New", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-ud: "BIZ UDPGothic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-grid: "Orbitron", "Zen Kaku Gothic New", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-grid: "M PLUS 1 Code", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-sans: "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-clean: "Kosugi", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-slim: "Sawarabi Gothic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-base: var(--font-neo);
   --container-width: 1080px;
   --radius: 18px;
@@ -70,6 +72,14 @@ html[data-font="grid"] {
 
 html[data-font="sans"] {
   --font-base: var(--font-sans);
+}
+
+html[data-font="clean"] {
+  --font-base: var(--font-clean);
+}
+
+html[data-font="slim"] {
+  --font-base: var(--font-slim);
 }
 
 * {

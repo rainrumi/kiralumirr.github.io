@@ -15,6 +15,10 @@
   --font-soft: "Zen Maru Gothic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-cute: "Kiwi Maru", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-round: "M PLUS Rounded 1c", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-pixel: "DotGothic16", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-hand: "Klee One", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-pop: "Hachi Maru Pop", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-deco: "Kaisei Decol", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-base: var(--font-neo);
   --container-width: 1080px;
   --radius: 18px;
@@ -30,6 +34,22 @@ html[data-font="cute"] {
 
 html[data-font="round"] {
   --font-base: var(--font-round);
+}
+
+html[data-font="pixel"] {
+  --font-base: var(--font-pixel);
+}
+
+html[data-font="hand"] {
+  --font-base: var(--font-hand);
+}
+
+html[data-font="pop"] {
+  --font-base: var(--font-pop);
+}
+
+html[data-font="deco"] {
+  --font-base: var(--font-deco);
 }
 
 * {
@@ -150,6 +170,7 @@ button:focus-visible {
   z-index: 10;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 24px;
   padding: 14px max(16px, calc((100% - var(--container-width)) / 2));
@@ -175,10 +196,17 @@ button:focus-visible {
   display: inline-flex;
   flex: 0 0 auto;
   gap: 4px;
+  max-width: min(100%, 540px);
+  overflow-x: auto;
   padding: 3px;
   border: 1px solid rgba(188, 246, 255, 0.22);
   border-radius: 999px;
   background: rgba(2, 13, 24, 0.34);
+  scrollbar-width: none;
+}
+
+.font-switcher::-webkit-scrollbar {
+  display: none;
 }
 
 .font-switch-button {

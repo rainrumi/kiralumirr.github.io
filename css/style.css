@@ -37,7 +37,14 @@ html[data-font="round"] {
 }
 
 html {
+  font-family: var(--font-base);
   scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  font-family: inherit;
 }
 
 body {
@@ -49,7 +56,7 @@ body {
     radial-gradient(circle at 86% 80%, rgba(0, 18, 43, 0.9) 0 18%, transparent 42%),
     linear-gradient(180deg, #071a2c 0%, #020814 44%, #00050b 100%);
   color: var(--color-text);
-  font-family: var(--font-base);
+  font-family: inherit;
   line-height: 1.7;
 }
 

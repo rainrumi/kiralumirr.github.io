@@ -33,7 +33,7 @@ function buildWaterSurfaceGeometry(width, height, time, seed, isHovering) {
   const colors = [];
   const indices = [];
   const waveAmount = isHovering ? 1.18 : 0.72;
-  const edgeFalloffStart = 0.62;
+  const edgeFalloffStart = 0.48;
 
   const edgeWaveAt = (xRatio, yRatio) => {
     const angle = Math.atan2(yRatio, xRatio);
@@ -71,12 +71,12 @@ function buildWaterSurfaceGeometry(width, height, time, seed, isHovering) {
           Math.sin((xRatio - yRatio) * 10.7 + time * 1.45 + seed) * 0.014
           + Math.sin((xRatio + yRatio) * 14.3 - time * 0.82 + seed * 1.37) * 0.01
         ) * edgeDepth;
-      const shrink = 1 - edgeDepth * 0.12 + edgeWave;
+      const shrink = 1 - edgeDepth * 0.025 + edgeWave * 0.36;
       const x = xRatio * width * shrink;
-      const y = yRatio * height * (shrink + edgeWave * 0.38);
+      const y = yRatio * height * (shrink + edgeWave * 0.18);
       const z = (ripple * centerPlane) + edgeRipple - edgeDepth * 0.3;
-      const light = 0.46 + centerPlane * 0.08 + Math.sin((xRatio * 9) + (time * 0.9) + seed) * 0.018 + edgeDepth * 0.035;
-      const saturation = 0.34 + edgeDepth * 0.08;
+      const light = 0.45 + centerPlane * 0.07 + Math.sin((xRatio * 9) + (time * 0.9) + seed) * 0.016 + edgeDepth * 0.055;
+      const saturation = 0.33 + edgeDepth * 0.12;
       const hue = 0.49 + Math.sin((xRatio - yRatio) * 2 + seed) * 0.014;
       const color = new THREE.Color().setHSL(hue, saturation, light);
 
@@ -150,7 +150,7 @@ function createBubbleButton(button) {
   const state = {
     button,
     camera,
-    heightScale: 0.96,
+    heightScale: 1.12,
     renderer,
     scene,
     seed,
@@ -170,7 +170,7 @@ function resizeBubble(state) {
   const height = Math.max(1, Math.round(rect.height));
   const aspect = width / height;
 
-  state.heightScale = 0.96;
+  state.heightScale = 1.12;
   state.widthScale = Math.max(1.1, aspect * state.heightScale);
   state.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   state.renderer.setSize(width, height, false);

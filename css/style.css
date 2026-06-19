@@ -292,23 +292,8 @@ button:focus-visible {
 }
 
 .hero-text {
-  padding: 24px;
-  border: 1px solid rgba(232, 249, 213, 0.34);
-  border-radius: 24px;
-  background: rgba(255, 255, 248, 0.56);
-  box-shadow: 0 24px 70px rgba(0, 7, 16, 0.28);
-  backdrop-filter: blur(20px) saturate(1.16);
-  color: var(--color-text);
-}
-
-.hero-text p {
-  max-width: 680px;
-}
-
-.hero-subtitle {
-  color: #285d24;
-  font-size: 1.2rem;
-  font-weight: 700;
+  color: #f7fff4;
+  text-shadow: 0 2px 18px rgba(0, 7, 16, 0.44);
 }
 
 .section-block {

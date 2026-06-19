@@ -9,11 +9,20 @@
   <meta property="og:description" content="TODO: サイト説明文">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/images/ogp.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+1p:wght@400;500;700&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header" id="top">
     <a class="site-logo" href="index.html">TODO: サイト名</a>
+    <div class="font-switcher" role="group" aria-label="フォント切り替え">
+      <button class="font-switch-button is-active" type="button" data-font="neo" aria-pressed="true" aria-label="近未来フォントに切り替え" title="近未来">Neo</button>
+      <button class="font-switch-button" type="button" data-font="soft" aria-pressed="false" aria-label="優しいフォントに切り替え" title="優しさ">Soft</button>
+      <button class="font-switch-button" type="button" data-font="cute" aria-pressed="false" aria-label="可愛いフォントに切り替え" title="可愛さ">Cute</button>
+      <button class="font-switch-button" type="button" data-font="round" aria-pressed="false" aria-label="丸みのあるフォントに切り替え" title="丸み">Round</button>
+    </div>
     <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
       メニューを開く
     </button>

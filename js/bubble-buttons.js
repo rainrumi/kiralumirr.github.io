@@ -75,9 +75,9 @@ function buildWaterSurfaceGeometry(width, height, time, seed, isHovering) {
       const x = xRatio * width * shrink;
       const y = yRatio * height * (shrink + edgeWave * 0.38);
       const z = (ripple * centerPlane) + edgeRipple - edgeDepth * 0.3;
-      const light = 0.58 + centerPlane * 0.16 + Math.sin((xRatio * 9) + (time * 0.9) + seed) * 0.035 + edgeDepth * 0.06;
-      const saturation = 0.62 + edgeDepth * 0.16;
-      const hue = 0.51 + Math.sin((xRatio - yRatio) * 2 + seed) * 0.018;
+      const light = 0.46 + centerPlane * 0.08 + Math.sin((xRatio * 9) + (time * 0.9) + seed) * 0.018 + edgeDepth * 0.035;
+      const saturation = 0.34 + edgeDepth * 0.08;
+      const hue = 0.49 + Math.sin((xRatio - yRatio) * 2 + seed) * 0.014;
       const color = new THREE.Color().setHSL(hue, saturation, light);
 
       positions.push(x, y, z);
@@ -135,11 +135,11 @@ function createBubbleButton(button) {
   const camera = new THREE.PerspectiveCamera(18, 1, 0.1, 20);
   const material = new THREE.MeshBasicMaterial({
     transparent: true,
-    opacity: 0.58,
+    opacity: 0.42,
     vertexColors: true,
     side: THREE.DoubleSide,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
   });
   const surface = new THREE.Mesh(new THREE.BufferGeometry(), material);
   const seed = Math.random() * Math.PI * 2;
@@ -188,7 +188,7 @@ function render(time) {
     state.surface.geometry = geometry;
     state.surface.rotation.x = prefersReducedMotion.matches ? 0 : Math.sin(progress * 0.55 + state.seed) * 0.018;
     state.surface.rotation.y = prefersReducedMotion.matches ? 0 : Math.sin(progress * 0.48 + state.seed) * 0.035;
-    state.surface.material.opacity = isHovering ? 0.74 : 0.58;
+    state.surface.material.opacity = isHovering ? 0.54 : 0.42;
     state.renderer.render(state.scene, state.camera);
   });
 

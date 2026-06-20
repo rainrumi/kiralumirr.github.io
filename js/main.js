@@ -406,13 +406,15 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 if (!prefersReducedMotion.matches) {
   const rippleCanvas = document.createElement("canvas");
   const rippleContext = rippleCanvas.getContext("2d");
-  const ripples = [];
-  const activePointers = new Map();
-  const maxRipples = 58;
-  const rippleDistance = 18;
-  const rippleDuration = 1350;
+  const wakes = [];
+  const pointerPoints = new Map();
+  const touchPoints = new Map();
+  const maxWakes = 74;
+  const wakeDistance = 14;
+  const wakeDuration = 1250;
   let ripplePixelRatio = 1;
-  let rippleAnimationId = 0;
+  let wakeAnimationId = 0;
+  let lastMousePoint = null;
 
   rippleCanvas.className = "water-ripple-layer";
   rippleCanvas.setAttribute("aria-hidden", "true");
@@ -430,124 +432,175 @@ if (!prefersReducedMotion.matches) {
     }
   };
 
-  const addRipple = (x, y, force = 1) => {
-    ripples.push({
+  const queueWake = (x, y, dx, dy, force = 1) => {
+    const distance = Math.hypot(dx, dy);
+
+    if (distance < 1) {
+      return;
+    }
+
+    wakes.push({
       x,
       y,
-      force,
+      angle: Math.atan2(dy, dx),
+      force: Math.min(1.65, force),
+      speed: Math.min(120, distance),
       startedAt: performance.now(),
     });
 
-    if (ripples.length > maxRipples) {
-      ripples.splice(0, ripples.length - maxRipples);
+    if (wakes.length > maxWakes) {
+      wakes.splice(0, wakes.length - maxWakes);
     }
 
-    if (!rippleAnimationId) {
-      rippleAnimationId = window.requestAnimationFrame(drawRipples);
+    if (!wakeAnimationId) {
+      wakeAnimationId = window.requestAnimationFrame(drawWakes);
     }
   };
 
-  function drawRipples(now) {
+  const updateWakePoint = (store, key, x, y, force = 1) => {
+    const previous = store.get(key);
+    const now = performance.now();
+
+    if (!previous) {
+      store.set(key, { x, y, lastAt: now });
+      return;
+    }
+
+    const dx = x - previous.x;
+    const dy = y - previous.y;
+    const distance = Math.hypot(dx, dy);
+
+    if (distance >= wakeDistance || now - previous.lastAt > 90) {
+      queueWake(x, y, dx, dy, force + Math.min(0.45, distance / 120));
+      store.set(key, { x, y, lastAt: now });
+    }
+  };
+
+  const drawWakeArm = (context, length, width, side, alpha, progress) => {
+    const rearX = -length;
+    const rearY = width * side;
+    const controlX = -length * (0.42 + progress * 0.18);
+    const controlY = width * side * (0.2 + progress * 0.15);
+
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.quadraticCurveTo(controlX, controlY, rearX, rearY);
+    context.strokeStyle = `rgba(226, 255, 255, ${alpha})`;
+    context.lineWidth = Math.max(0.8, 2.1 - progress * 1.1);
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(-length * 0.18, side * 2);
+    context.quadraticCurveTo(controlX * 0.9, controlY + side * 8, rearX * 0.88, rearY * 0.82);
+    context.strokeStyle = `rgba(126, 218, 255, ${alpha * 0.42})`;
+    context.lineWidth = 1;
+    context.stroke();
+  };
+
+  function drawWakes(now) {
     if (!rippleContext) {
       return;
     }
 
     rippleContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    rippleContext.lineCap = "round";
+    rippleContext.lineJoin = "round";
 
-    for (let index = ripples.length - 1; index >= 0; index -= 1) {
-      const ripple = ripples[index];
-      const progress = (now - ripple.startedAt) / rippleDuration;
+    for (let index = wakes.length - 1; index >= 0; index -= 1) {
+      const wake = wakes[index];
+      const progress = (now - wake.startedAt) / wakeDuration;
 
       if (progress >= 1) {
-        ripples.splice(index, 1);
+        wakes.splice(index, 1);
         continue;
       }
 
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const radius = 12 + eased * (74 + ripple.force * 20);
-      const alpha = (1 - progress) * 0.36 * ripple.force;
-      const highlight = rippleContext.createRadialGradient(ripple.x, ripple.y, Math.max(2, radius * 0.16), ripple.x, ripple.y, radius);
+      const eased = 1 - Math.pow(1 - progress, 2.4);
+      const length = 38 + wake.speed * 0.7 + eased * 42;
+      const width = 12 + wake.speed * 0.22 + eased * 34;
+      const alpha = (1 - progress) * 0.28 * wake.force;
 
-      highlight.addColorStop(0, `rgba(235, 255, 255, ${alpha * 0.1})`);
-      highlight.addColorStop(0.54, `rgba(162, 235, 255, ${alpha * 0.18})`);
-      highlight.addColorStop(1, "rgba(162, 235, 255, 0)");
+      rippleContext.save();
+      rippleContext.translate(wake.x, wake.y);
+      rippleContext.rotate(wake.angle);
+
+      const wash = rippleContext.createLinearGradient(0, 0, -length, 0);
+
+      wash.addColorStop(0, `rgba(235, 255, 255, ${alpha * 0.18})`);
+      wash.addColorStop(0.48, `rgba(128, 222, 255, ${alpha * 0.12})`);
+      wash.addColorStop(1, "rgba(128, 222, 255, 0)");
 
       rippleContext.beginPath();
-      rippleContext.arc(ripple.x, ripple.y, radius, 0, Math.PI * 2);
-      rippleContext.fillStyle = highlight;
+      rippleContext.ellipse(-length * 0.34, 0, length * 0.46, width * 0.56, 0, 0, Math.PI * 2);
+      rippleContext.fillStyle = wash;
       rippleContext.fill();
 
-      rippleContext.beginPath();
-      rippleContext.arc(ripple.x, ripple.y, radius * 0.72, 0, Math.PI * 2);
-      rippleContext.strokeStyle = `rgba(232, 255, 255, ${alpha})`;
-      rippleContext.lineWidth = 1.4;
-      rippleContext.stroke();
+      drawWakeArm(rippleContext, length, width, -1, alpha, progress);
+      drawWakeArm(rippleContext, length, width, 1, alpha, progress);
 
       rippleContext.beginPath();
-      rippleContext.arc(ripple.x - radius * 0.12, ripple.y - radius * 0.1, radius * 0.34, -0.25, Math.PI * 1.08);
-      rippleContext.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.7})`;
+      rippleContext.moveTo(-4, 0);
+      rippleContext.quadraticCurveTo(-length * 0.34, Math.sin(progress * Math.PI * 2) * 4, -length * 0.82, 0);
+      rippleContext.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.54})`;
       rippleContext.lineWidth = 0.9;
       rippleContext.stroke();
+
+      rippleContext.restore();
     }
 
-    if (ripples.length > 0 || activePointers.size > 0) {
-      rippleAnimationId = window.requestAnimationFrame(drawRipples);
+    if (wakes.length > 0) {
+      wakeAnimationId = window.requestAnimationFrame(drawWakes);
     } else {
-      rippleAnimationId = 0;
+      wakeAnimationId = 0;
     }
   }
-
-  const updatePointerRipple = (event, isStart = false) => {
-    const pointer = activePointers.get(event.pointerId);
-
-    if (!pointer) {
-      return;
-    }
-
-    const dx = event.clientX - pointer.x;
-    const dy = event.clientY - pointer.y;
-    const distance = Math.hypot(dx, dy);
-    const now = performance.now();
-
-    if (!isStart && distance < rippleDistance && now - pointer.lastAt < 80) {
-      return;
-    }
-
-    pointer.x = event.clientX;
-    pointer.y = event.clientY;
-    pointer.lastAt = now;
-    addRipple(event.clientX, event.clientY, isStart ? 1.1 : Math.min(1.35, 0.8 + distance / 80));
-  };
 
   resizeRippleCanvas();
 
   window.addEventListener("resize", resizeRippleCanvas);
 
-  window.addEventListener("pointerdown", (event) => {
-    if (event.pointerType === "mouse" && event.button !== 0) {
-      return;
-    }
-
-    activePointers.set(event.pointerId, {
-      x: event.clientX,
-      y: event.clientY,
-      lastAt: performance.now(),
-    });
-    updatePointerRipple(event, true);
-  }, { passive: true });
-
   window.addEventListener("pointermove", (event) => {
-    updatePointerRipple(event);
+    const key = event.pointerType === "mouse" ? "mouse" : event.pointerId;
+
+    updateWakePoint(pointerPoints, key, event.clientX, event.clientY, event.pointerType === "touch" ? 1.18 : 1);
+
+    if (event.pointerType === "mouse") {
+      lastMousePoint = { x: event.clientX, y: event.clientY };
+    }
   }, { passive: true });
 
-  const removePointerRipple = (event) => {
-    activePointers.delete(event.pointerId);
+  window.addEventListener("wheel", (event) => {
+    const x = Number.isFinite(event.clientX) ? event.clientX : lastMousePoint?.x ?? window.innerWidth / 2;
+    const y = Number.isFinite(event.clientY) ? event.clientY : lastMousePoint?.y ?? window.innerHeight / 2;
+    const dx = event.deltaX || 0;
+    const dy = event.deltaY || 0;
+    const distance = Math.hypot(dx, dy);
+
+    if (distance > 0) {
+      queueWake(x, y, dx / Math.max(1, distance) * 34, dy / Math.max(1, distance) * 34, 1.24);
+    }
+  }, { passive: true });
+
+  window.addEventListener("touchmove", (event) => {
+    Array.from(event.changedTouches).forEach((touch) => {
+      updateWakePoint(touchPoints, touch.identifier, touch.clientX, touch.clientY, 1.22);
+    });
+  }, { passive: true });
+
+  const forgetTouchPoint = (event) => {
+    Array.from(event.changedTouches).forEach((touch) => {
+      touchPoints.delete(touch.identifier);
+    });
   };
 
-  window.addEventListener("pointerup", removePointerRipple, { passive: true });
-  window.addEventListener("pointercancel", removePointerRipple, { passive: true });
+  window.addEventListener("touchend", forgetTouchPoint, { passive: true });
+  window.addEventListener("touchcancel", forgetTouchPoint, { passive: true });
+  window.addEventListener("pointercancel", (event) => {
+    pointerPoints.delete(event.pointerId);
+  }, { passive: true });
   window.addEventListener("blur", () => {
-    activePointers.clear();
+    pointerPoints.clear();
+    touchPoints.clear();
   });
 
   const bubbleLayer = document.createElement("div");

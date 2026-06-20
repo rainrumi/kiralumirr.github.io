@@ -407,6 +407,14 @@ h4 {
   border: 0;
 }
 
+.profile-intro {
+  margin: 0;
+  color: var(--color-primary-dark);
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
 .button-row {
   display: flex;
   flex-wrap: wrap;

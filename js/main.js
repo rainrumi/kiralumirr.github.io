@@ -407,8 +407,12 @@ if (!prefersReducedMotion.matches) {
   const rippleCanvas = document.createElement("canvas");
   const rippleContext = rippleCanvas.getContext("2d");
   const waterMarks = [];
+  const tapRipples = [];
+  const pointerStarts = new Map();
   const maxWaterMarks = 16;
+  const maxTapRipples = 12;
   const waterMarkDuration = 3200;
+  const tapRippleDuration = 1150;
   const waterMarkMargin = 80;
   let ripplePixelRatio = 1;
   let wakeAnimationId = 0;
@@ -446,6 +450,24 @@ if (!prefersReducedMotion.matches) {
     }
 
     startWaterAnimation();
+  };
+
+  const queueTapRipple = (x, y) => {
+    tapRipples.push({
+      x,
+      y,
+      startedAt: performance.now(),
+    });
+
+    if (tapRipples.length > maxTapRipples) {
+      tapRipples.splice(0, tapRipples.length - maxTapRipples);
+    }
+
+    startWaterAnimation();
+  };
+
+  const isRippleBlockedTarget = (target) => {
+    return target instanceof Element && Boolean(target.closest("a, button, input, textarea, select, summary, [role='button'], .work-marquee"));
   };
 
   const drawWaterMark = (context, mark, now) => {
@@ -490,6 +512,38 @@ if (!prefersReducedMotion.matches) {
     return true;
   };
 
+  const drawTapRipple = (context, ripple, now) => {
+    const progress = (now - ripple.startedAt) / tapRippleDuration;
+
+    if (progress >= 1) {
+      return false;
+    }
+
+    const eased = 1 - Math.pow(1 - progress, 2.4);
+    const radius = 14 + eased * 86;
+    const alpha = (1 - progress) * 0.38;
+    const glow = context.createRadialGradient(ripple.x, ripple.y, radius * 0.12, ripple.x, ripple.y, radius * 1.12);
+
+    glow.addColorStop(0, `rgba(235, 255, 255, ${alpha * 0.08})`);
+    glow.addColorStop(0.62, `rgba(142, 229, 255, ${alpha * 0.16})`);
+    glow.addColorStop(1, "rgba(142, 229, 255, 0)");
+
+    context.beginPath();
+    context.arc(ripple.x, ripple.y, radius * 1.12, 0, Math.PI * 2);
+    context.fillStyle = glow;
+    context.fill();
+
+    for (let ring = 0; ring < 2; ring += 1) {
+      context.beginPath();
+      context.arc(ripple.x, ripple.y, radius * (0.72 + ring * 0.28), 0, Math.PI * 2);
+      context.strokeStyle = `rgba(232, 255, 255, ${alpha * (1 - ring * 0.34)})`;
+      context.lineWidth = Math.max(0.8, 1.8 - ring * 0.5);
+      context.stroke();
+    }
+
+    return true;
+  };
+
   function startWaterAnimation() {
     if (!wakeAnimationId) {
       wakeAnimationId = window.requestAnimationFrame(drawWakes);
@@ -511,7 +565,13 @@ if (!prefersReducedMotion.matches) {
       }
     }
 
-    if (waterMarks.length > 0) {
+    for (let index = tapRipples.length - 1; index >= 0; index -= 1) {
+      if (!drawTapRipple(rippleContext, tapRipples[index], now)) {
+        tapRipples.splice(index, 1);
+      }
+    }
+
+    if (waterMarks.length > 0 || tapRipples.length > 0) {
       wakeAnimationId = window.requestAnimationFrame(drawWakes);
     } else {
       wakeAnimationId = 0;
@@ -544,6 +604,38 @@ if (!prefersReducedMotion.matches) {
       scheduleWaterMark();
     }
   });
+
+  window.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    pointerStarts.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY,
+      target: event.target,
+    });
+  }, { passive: true });
+
+  window.addEventListener("pointerup", (event) => {
+    const start = pointerStarts.get(event.pointerId);
+
+    pointerStarts.delete(event.pointerId);
+
+    if (!start || isRippleBlockedTarget(start.target) || isRippleBlockedTarget(event.target)) {
+      return;
+    }
+
+    if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 12) {
+      return;
+    }
+
+    queueTapRipple(event.clientX, event.clientY);
+  }, { passive: true });
+
+  window.addEventListener("pointercancel", (event) => {
+    pointerStarts.delete(event.pointerId);
+  }, { passive: true });
 
   const bubbleLayer = document.createElement("div");
   const maxBubbles = 18;

@@ -149,13 +149,6 @@ button:focus-visible {
   text-decoration: none;
 }
 
-.site-logo::before {
-  color: var(--color-leaf);
-  content: "botanical tide / ";
-  font-size: 0.78em;
-  font-weight: 600;
-}
-
 .menu-button {
   position: relative;
   display: none;
@@ -869,10 +862,6 @@ h4 {
     align-items: center;
     flex-wrap: wrap;
     gap: 10px 12px;
-  }
-
-  .site-logo::before {
-    display: block;
   }
 
   .menu-button {

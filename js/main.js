@@ -445,17 +445,27 @@ if (!prefersReducedMotion.matches) {
   let ripplePixelRatio = 1;
   let wakeAnimationId = 0;
   let waterMarkTimeoutId = 0;
+  let lastTapRipple = null;
 
   rippleCanvas.className = "water-ripple-layer";
   rippleCanvas.setAttribute("aria-hidden", "true");
   document.body.prepend(rippleCanvas);
 
+  const getRippleViewport = () => {
+    return {
+      width: window.visualViewport?.width || window.innerWidth,
+      height: window.visualViewport?.height || window.innerHeight,
+    };
+  };
+
   const resizeRippleCanvas = () => {
+    const viewport = getRippleViewport();
+
     ripplePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-    rippleCanvas.width = Math.ceil(window.innerWidth * ripplePixelRatio);
-    rippleCanvas.height = Math.ceil(window.innerHeight * ripplePixelRatio);
-    rippleCanvas.style.width = `${window.innerWidth}px`;
-    rippleCanvas.style.height = `${window.innerHeight}px`;
+    rippleCanvas.width = Math.ceil(viewport.width * ripplePixelRatio);
+    rippleCanvas.height = Math.ceil(viewport.height * ripplePixelRatio);
+    rippleCanvas.style.width = `${viewport.width}px`;
+    rippleCanvas.style.height = `${viewport.height}px`;
 
     if (rippleContext) {
       rippleContext.setTransform(ripplePixelRatio, 0, 0, ripplePixelRatio, 0, 0);
@@ -463,9 +473,11 @@ if (!prefersReducedMotion.matches) {
   };
 
   const queueWaterMark = () => {
+    const viewport = getRippleViewport();
+
     waterMarks.push({
-      x: -waterMarkMargin + Math.random() * (window.innerWidth + waterMarkMargin * 2),
-      y: -waterMarkMargin + Math.random() * (window.innerHeight + waterMarkMargin * 2),
+      x: -waterMarkMargin + Math.random() * (viewport.width + waterMarkMargin * 2),
+      y: -waterMarkMargin + Math.random() * (viewport.height + waterMarkMargin * 2),
       scale: 1 + Math.random() * 9,
       rotation: Math.random() * Math.PI,
       driftX: (Math.random() - 0.5) * 18,
@@ -583,7 +595,9 @@ if (!prefersReducedMotion.matches) {
       return;
     }
 
-    rippleContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    rippleContext.setTransform(1, 0, 0, 1, 0, 0);
+    rippleContext.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
+    rippleContext.setTransform(ripplePixelRatio, 0, 0, ripplePixelRatio, 0, 0);
     rippleContext.lineCap = "round";
     rippleContext.lineJoin = "round";
 
@@ -621,6 +635,7 @@ if (!prefersReducedMotion.matches) {
   scheduleWaterMark();
 
   window.addEventListener("resize", resizeRippleCanvas);
+  window.visualViewport?.addEventListener("resize", resizeRippleCanvas);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
       window.clearTimeout(waterMarkTimeoutId);
@@ -658,6 +673,15 @@ if (!prefersReducedMotion.matches) {
       return;
     }
 
+    if (lastTapRipple && performance.now() - lastTapRipple.at < 360 && Math.hypot(event.clientX - lastTapRipple.x, event.clientY - lastTapRipple.y) < 28) {
+      return;
+    }
+
+    lastTapRipple = {
+      x: event.clientX,
+      y: event.clientY,
+      at: performance.now(),
+    };
     queueTapRipple(event.clientX, event.clientY);
   }, { passive: true });
 

@@ -1,46 +1,5 @@
 const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
-const fontButtons = document.querySelectorAll(".font-switch-button");
-const fontStorageKey = "site-font";
-const fontNames = new Set(Array.from(fontButtons).map((button) => button.dataset.font).filter(Boolean));
-
-function setSiteFont(fontName) {
-  const safeFontName = fontNames.has(fontName) ? fontName : "neo";
-
-  document.documentElement.dataset.font = safeFontName;
-  fontButtons.forEach((button) => {
-    const isActive = button.dataset.font === safeFontName;
-
-    button.classList.toggle("is-active", isActive);
-    button.setAttribute("aria-pressed", String(isActive));
-  });
-}
-
-if (fontButtons.length > 0) {
-  let savedFont = "neo";
-
-  try {
-    savedFont = window.localStorage.getItem(fontStorageKey) || savedFont;
-  } catch (error) {
-    savedFont = "neo";
-  }
-
-  setSiteFont(savedFont);
-
-  fontButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const nextFont = button.dataset.font || "neo";
-
-      setSiteFont(nextFont);
-
-      try {
-        window.localStorage.setItem(fontStorageKey, nextFont);
-      } catch (error) {
-        // localStorage may be unavailable in restricted browser modes.
-      }
-    });
-  });
-}
 
 if (menuButton && siteNav) {
   menuButton.textContent = "メニューを開く";

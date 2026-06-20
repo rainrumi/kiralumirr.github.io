@@ -11,75 +11,9 @@
   --color-leaf: #7cbf3f;
   --color-border: rgba(191, 230, 168, 0.46);
   --shadow-card: 0 22px 54px rgba(1, 9, 18, 0.36);
-  --font-neo: "M PLUS 1p", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-soft: "Zen Maru Gothic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-cute: "Kiwi Maru", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-round: "M PLUS Rounded 1c", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-pixel: "DotGothic16", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-hand: "Klee One", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-pop: "Hachi Maru Pop", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-deco: "Kaisei Decol", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-kaku: "Zen Kaku Gothic New", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-ud: "BIZ UDPGothic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-grid: "M PLUS 1 Code", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-sans: "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-clean: "Kosugi", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-slim: "Sawarabi Gothic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-base: var(--font-neo);
+  --font-base: "M PLUS 1 Code", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --container-width: 1080px;
   --radius: 18px;
-}
-
-html[data-font="soft"] {
-  --font-base: var(--font-soft);
-}
-
-html[data-font="cute"] {
-  --font-base: var(--font-cute);
-}
-
-html[data-font="round"] {
-  --font-base: var(--font-round);
-}
-
-html[data-font="pixel"] {
-  --font-base: var(--font-pixel);
-}
-
-html[data-font="hand"] {
-  --font-base: var(--font-hand);
-}
-
-html[data-font="pop"] {
-  --font-base: var(--font-pop);
-}
-
-html[data-font="deco"] {
-  --font-base: var(--font-deco);
-}
-
-html[data-font="kaku"] {
-  --font-base: var(--font-kaku);
-}
-
-html[data-font="ud"] {
-  --font-base: var(--font-ud);
-}
-
-html[data-font="grid"] {
-  --font-base: var(--font-grid);
-}
-
-html[data-font="sans"] {
-  --font-base: var(--font-sans);
-}
-
-html[data-font="clean"] {
-  --font-base: var(--font-clean);
-}
-
-html[data-font="slim"] {
-  --font-base: var(--font-slim);
 }
 
 * {
@@ -220,49 +154,6 @@ button:focus-visible {
   content: "botanical tide / ";
   font-size: 0.78em;
   font-weight: 600;
-}
-
-.font-switcher {
-  display: inline-flex;
-  flex: 0 0 auto;
-  gap: 4px;
-  max-width: min(100%, 540px);
-  overflow-x: auto;
-  padding: 3px;
-  border: 1px solid rgba(188, 246, 255, 0.22);
-  border-radius: 999px;
-  background: rgba(2, 13, 24, 0.34);
-  scrollbar-width: none;
-}
-
-.font-switcher::-webkit-scrollbar {
-  display: none;
-}
-
-.font-switch-button {
-  min-height: 30px;
-  padding: 4px 10px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: transparent;
-  color: rgba(237, 248, 238, 0.78);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.font-switch-button:hover,
-.font-switch-button:focus-visible {
-  border-color: rgba(188, 246, 255, 0.36);
-  color: #ffffff;
-}
-
-.font-switch-button.is-active {
-  border-color: rgba(198, 217, 106, 0.54);
-  background: rgba(198, 217, 106, 0.16);
-  color: #f7fff4;
 }
 
 .menu-button {
@@ -999,16 +890,6 @@ h4 {
 
   .site-logo::before {
     display: block;
-  }
-
-  .font-switcher {
-    order: 3;
-    flex-basis: 100%;
-    overflow-x: auto;
-  }
-
-  .font-switch-button {
-    min-width: 58px;
   }
 
   .menu-button {

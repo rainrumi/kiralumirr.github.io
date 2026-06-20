@@ -521,9 +521,9 @@ h4 {
 
 .work-source-heading {
   display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 6px;
   margin-bottom: 16px;
 }
 
@@ -531,6 +531,14 @@ h4 {
   margin: 0;
   color: #edf8ee;
   font-size: clamp(1.45rem, 3vw, 1.8rem);
+}
+
+.work-source-description {
+  max-width: 640px;
+  margin: 0;
+  color: rgba(237, 248, 238, 0.84);
+  font-size: clamp(0.95rem, 1.8vw, 1.08rem);
+  line-height: 1.7;
 }
 
 .work-source-link-row {

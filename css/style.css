@@ -415,11 +415,31 @@ h4 {
 
 #profile .content-panel {
   border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #f7fff4;
+  backdrop-filter: none;
+  padding: 0;
+  overflow: visible;
+  text-shadow: 0 2px 14px rgba(0, 6, 12, 0.68);
+}
+
+#profile .content-panel::before {
+  display: none;
+}
+
+#profile .profile-detail-list dt {
+  color: #f3ffbd;
+}
+
+#profile .profile-detail-list dd {
+  color: #f7fff4;
 }
 
 .profile-intro {
   margin: 0;
-  color: var(--color-primary-dark);
+  color: #ffffff;
   font-size: 1.08rem;
   font-weight: 700;
   line-height: 1.8;

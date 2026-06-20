@@ -19,6 +19,20 @@ if (menuButton && siteNav) {
   });
 }
 
+document.querySelectorAll('a[href="#top"]').forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (menuButton && siteNav) {
+      siteNav.classList.remove("is-open");
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.setAttribute("aria-label", "Menu");
+      menuButton.textContent = "メニューを開く";
+    }
+  });
+});
+
 const workMarquees = document.querySelectorAll(".work-marquee");
 const workCarousels = [];
 

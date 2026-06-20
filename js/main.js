@@ -1,5 +1,6 @@
 const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
+const pageTopButton = document.querySelector(".page-top-button");
 
 if (menuButton && siteNav) {
   menuButton.textContent = "メニューを開く";
@@ -32,6 +33,19 @@ document.querySelectorAll('a[href="#top"]').forEach((link) => {
     }
   });
 });
+
+if (pageTopButton) {
+  const updatePageTopButton = () => {
+    const isVisible = window.scrollY > 120;
+
+    pageTopButton.classList.toggle("is-visible", isVisible);
+    pageTopButton.setAttribute("aria-hidden", String(!isVisible));
+    pageTopButton.tabIndex = isVisible ? 0 : -1;
+  };
+
+  updatePageTopButton();
+  window.addEventListener("scroll", updatePageTopButton, { passive: true });
+}
 
 const workMarquees = document.querySelectorAll(".work-marquee");
 const workCarousels = [];

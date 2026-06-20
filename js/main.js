@@ -407,13 +407,18 @@ if (!prefersReducedMotion.matches) {
   const rippleCanvas = document.createElement("canvas");
   const rippleContext = rippleCanvas.getContext("2d");
   const wakes = [];
+  const waterMarks = [];
   const pointerPoints = new Map();
   const touchPoints = new Map();
   const maxWakes = 74;
+  const maxWaterMarks = 16;
   const wakeDistance = 14;
   const wakeDuration = 1250;
+  const waterMarkDuration = 3200;
+  const waterMarkMargin = 80;
   let ripplePixelRatio = 1;
   let wakeAnimationId = 0;
+  let waterMarkTimeoutId = 0;
   let lastMousePoint = null;
 
   rippleCanvas.className = "water-ripple-layer";
@@ -452,9 +457,25 @@ if (!prefersReducedMotion.matches) {
       wakes.splice(0, wakes.length - maxWakes);
     }
 
-    if (!wakeAnimationId) {
-      wakeAnimationId = window.requestAnimationFrame(drawWakes);
+    startWaterAnimation();
+  };
+
+  const queueWaterMark = () => {
+    waterMarks.push({
+      x: -waterMarkMargin + Math.random() * (window.innerWidth + waterMarkMargin * 2),
+      y: -waterMarkMargin + Math.random() * (window.innerHeight + waterMarkMargin * 2),
+      scale: 1 + Math.random() * 9,
+      rotation: Math.random() * Math.PI,
+      driftX: (Math.random() - 0.5) * 18,
+      driftY: (Math.random() - 0.5) * 18,
+      startedAt: performance.now(),
+    });
+
+    if (waterMarks.length > maxWaterMarks) {
+      waterMarks.splice(0, waterMarks.length - maxWaterMarks);
     }
+
+    startWaterAnimation();
   };
 
   const updateWakePoint = (store, key, x, y, force = 1) => {
@@ -497,6 +518,54 @@ if (!prefersReducedMotion.matches) {
     context.stroke();
   };
 
+  const drawWaterMark = (context, mark, now) => {
+    const progress = (now - mark.startedAt) / waterMarkDuration;
+
+    if (progress >= 1) {
+      return false;
+    }
+
+    const eased = 1 - Math.pow(1 - progress, 2.2);
+    const baseRadius = mark.scale * (7 + eased * 6);
+    const alpha = (1 - progress) * (0.16 + mark.scale * 0.012);
+    const x = mark.x + mark.driftX * eased;
+    const y = mark.y + mark.driftY * eased;
+
+    context.save();
+    context.translate(x, y);
+    context.rotate(mark.rotation);
+
+    for (let ring = 0; ring < 3; ring += 1) {
+      const ringProgress = Math.max(0, Math.min(1, progress + ring * 0.12));
+      const radius = baseRadius * (1 + ringProgress * (1.1 + ring * 0.26));
+
+      context.beginPath();
+      context.ellipse(0, 0, radius * (1.42 + ring * 0.08), radius * (0.72 + ring * 0.04), 0, 0, Math.PI * 2);
+      context.strokeStyle = `rgba(224, 255, 255, ${alpha * (1 - ring * 0.24)})`;
+      context.lineWidth = Math.max(0.65, 1.6 - ring * 0.32);
+      context.stroke();
+    }
+
+    const haze = context.createRadialGradient(0, 0, baseRadius * 0.4, 0, 0, baseRadius * 2.4);
+
+    haze.addColorStop(0, `rgba(226, 255, 255, ${alpha * 0.08})`);
+    haze.addColorStop(1, "rgba(226, 255, 255, 0)");
+
+    context.beginPath();
+    context.ellipse(0, 0, baseRadius * 2.4, baseRadius * 1.1, 0, 0, Math.PI * 2);
+    context.fillStyle = haze;
+    context.fill();
+    context.restore();
+
+    return true;
+  };
+
+  function startWaterAnimation() {
+    if (!wakeAnimationId) {
+      wakeAnimationId = window.requestAnimationFrame(drawWakes);
+    }
+  }
+
   function drawWakes(now) {
     if (!rippleContext) {
       return;
@@ -505,6 +574,12 @@ if (!prefersReducedMotion.matches) {
     rippleContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     rippleContext.lineCap = "round";
     rippleContext.lineJoin = "round";
+
+    for (let index = waterMarks.length - 1; index >= 0; index -= 1) {
+      if (!drawWaterMark(rippleContext, waterMarks[index], now)) {
+        waterMarks.splice(index, 1);
+      }
+    }
 
     for (let index = wakes.length - 1; index >= 0; index -= 1) {
       const wake = wakes[index];
@@ -548,16 +623,39 @@ if (!prefersReducedMotion.matches) {
       rippleContext.restore();
     }
 
-    if (wakes.length > 0) {
+    if (wakes.length > 0 || waterMarks.length > 0) {
       wakeAnimationId = window.requestAnimationFrame(drawWakes);
     } else {
       wakeAnimationId = 0;
     }
   }
 
+  const scheduleWaterMark = () => {
+    if (document.visibilityState === "hidden") {
+      return;
+    }
+
+    waterMarkTimeoutId = window.setTimeout(() => {
+      queueWaterMark();
+      scheduleWaterMark();
+    }, 1400 + Math.random() * 2300);
+  };
+
   resizeRippleCanvas();
+  scheduleWaterMark();
 
   window.addEventListener("resize", resizeRippleCanvas);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      window.clearTimeout(waterMarkTimeoutId);
+      waterMarkTimeoutId = 0;
+      return;
+    }
+
+    if (!waterMarkTimeoutId) {
+      scheduleWaterMark();
+    }
+  });
 
   window.addEventListener("pointermove", (event) => {
     const key = event.pointerType === "mouse" ? "mouse" : event.pointerId;

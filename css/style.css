@@ -59,6 +59,23 @@ body::before {
   opacity: 0.95;
 }
 
+.water-ripple-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.72;
+}
+
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
 .bubble-layer {
   position: fixed;
   inset: 0;
@@ -994,6 +1011,7 @@ h4 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .water-ripple-layer,
   .bubble-layer {
     display: none;
   }

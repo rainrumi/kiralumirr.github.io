@@ -404,6 +404,152 @@ window.addEventListener("resize", () => {
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 if (!prefersReducedMotion.matches) {
+  const rippleCanvas = document.createElement("canvas");
+  const rippleContext = rippleCanvas.getContext("2d");
+  const ripples = [];
+  const activePointers = new Map();
+  const maxRipples = 58;
+  const rippleDistance = 18;
+  const rippleDuration = 1350;
+  let ripplePixelRatio = 1;
+  let rippleAnimationId = 0;
+
+  rippleCanvas.className = "water-ripple-layer";
+  rippleCanvas.setAttribute("aria-hidden", "true");
+  document.body.prepend(rippleCanvas);
+
+  const resizeRippleCanvas = () => {
+    ripplePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    rippleCanvas.width = Math.ceil(window.innerWidth * ripplePixelRatio);
+    rippleCanvas.height = Math.ceil(window.innerHeight * ripplePixelRatio);
+    rippleCanvas.style.width = `${window.innerWidth}px`;
+    rippleCanvas.style.height = `${window.innerHeight}px`;
+
+    if (rippleContext) {
+      rippleContext.setTransform(ripplePixelRatio, 0, 0, ripplePixelRatio, 0, 0);
+    }
+  };
+
+  const addRipple = (x, y, force = 1) => {
+    ripples.push({
+      x,
+      y,
+      force,
+      startedAt: performance.now(),
+    });
+
+    if (ripples.length > maxRipples) {
+      ripples.splice(0, ripples.length - maxRipples);
+    }
+
+    if (!rippleAnimationId) {
+      rippleAnimationId = window.requestAnimationFrame(drawRipples);
+    }
+  };
+
+  function drawRipples(now) {
+    if (!rippleContext) {
+      return;
+    }
+
+    rippleContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    for (let index = ripples.length - 1; index >= 0; index -= 1) {
+      const ripple = ripples[index];
+      const progress = (now - ripple.startedAt) / rippleDuration;
+
+      if (progress >= 1) {
+        ripples.splice(index, 1);
+        continue;
+      }
+
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const radius = 12 + eased * (74 + ripple.force * 20);
+      const alpha = (1 - progress) * 0.36 * ripple.force;
+      const highlight = rippleContext.createRadialGradient(ripple.x, ripple.y, Math.max(2, radius * 0.16), ripple.x, ripple.y, radius);
+
+      highlight.addColorStop(0, `rgba(235, 255, 255, ${alpha * 0.1})`);
+      highlight.addColorStop(0.54, `rgba(162, 235, 255, ${alpha * 0.18})`);
+      highlight.addColorStop(1, "rgba(162, 235, 255, 0)");
+
+      rippleContext.beginPath();
+      rippleContext.arc(ripple.x, ripple.y, radius, 0, Math.PI * 2);
+      rippleContext.fillStyle = highlight;
+      rippleContext.fill();
+
+      rippleContext.beginPath();
+      rippleContext.arc(ripple.x, ripple.y, radius * 0.72, 0, Math.PI * 2);
+      rippleContext.strokeStyle = `rgba(232, 255, 255, ${alpha})`;
+      rippleContext.lineWidth = 1.4;
+      rippleContext.stroke();
+
+      rippleContext.beginPath();
+      rippleContext.arc(ripple.x - radius * 0.12, ripple.y - radius * 0.1, radius * 0.34, -0.25, Math.PI * 1.08);
+      rippleContext.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.7})`;
+      rippleContext.lineWidth = 0.9;
+      rippleContext.stroke();
+    }
+
+    if (ripples.length > 0 || activePointers.size > 0) {
+      rippleAnimationId = window.requestAnimationFrame(drawRipples);
+    } else {
+      rippleAnimationId = 0;
+    }
+  }
+
+  const updatePointerRipple = (event, isStart = false) => {
+    const pointer = activePointers.get(event.pointerId);
+
+    if (!pointer) {
+      return;
+    }
+
+    const dx = event.clientX - pointer.x;
+    const dy = event.clientY - pointer.y;
+    const distance = Math.hypot(dx, dy);
+    const now = performance.now();
+
+    if (!isStart && distance < rippleDistance && now - pointer.lastAt < 80) {
+      return;
+    }
+
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    pointer.lastAt = now;
+    addRipple(event.clientX, event.clientY, isStart ? 1.1 : Math.min(1.35, 0.8 + distance / 80));
+  };
+
+  resizeRippleCanvas();
+
+  window.addEventListener("resize", resizeRippleCanvas);
+
+  window.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    activePointers.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY,
+      lastAt: performance.now(),
+    });
+    updatePointerRipple(event, true);
+  }, { passive: true });
+
+  window.addEventListener("pointermove", (event) => {
+    updatePointerRipple(event);
+  }, { passive: true });
+
+  const removePointerRipple = (event) => {
+    activePointers.delete(event.pointerId);
+  };
+
+  window.addEventListener("pointerup", removePointerRipple, { passive: true });
+  window.addEventListener("pointercancel", removePointerRipple, { passive: true });
+  window.addEventListener("blur", () => {
+    activePointers.clear();
+  });
+
   const bubbleLayer = document.createElement("div");
   const maxBubbles = 18;
 

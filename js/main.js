@@ -406,21 +406,13 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 if (!prefersReducedMotion.matches) {
   const rippleCanvas = document.createElement("canvas");
   const rippleContext = rippleCanvas.getContext("2d");
-  const wakeTrails = [];
   const waterMarks = [];
-  const pointerPoints = new Map();
-  const touchPoints = new Map();
-  const maxWakeTrails = 12;
-  const maxTrailPoints = 46;
   const maxWaterMarks = 16;
-  const wakeDistance = 8;
-  const wakeDuration = 1500;
   const waterMarkDuration = 3200;
   const waterMarkMargin = 80;
   let ripplePixelRatio = 1;
   let wakeAnimationId = 0;
   let waterMarkTimeoutId = 0;
-  let lastMousePoint = null;
 
   rippleCanvas.className = "water-ripple-layer";
   rippleCanvas.setAttribute("aria-hidden", "true");
@@ -436,32 +428,6 @@ if (!prefersReducedMotion.matches) {
     if (rippleContext) {
       rippleContext.setTransform(ripplePixelRatio, 0, 0, ripplePixelRatio, 0, 0);
     }
-  };
-
-  const createWakeTrail = (x, y, force = 1) => {
-    const trail = {
-      force: Math.min(1.6, force),
-      points: [{ x, y, at: performance.now() }],
-    };
-
-    wakeTrails.push(trail);
-
-    if (wakeTrails.length > maxWakeTrails) {
-      wakeTrails.splice(0, wakeTrails.length - maxWakeTrails);
-    }
-
-    return trail;
-  };
-
-  const addTrailPoint = (trail, x, y, force = 1) => {
-    trail.force = Math.min(1.6, Math.max(trail.force, force));
-    trail.points.push({ x, y, at: performance.now() });
-
-    if (trail.points.length > maxTrailPoints) {
-      trail.points.splice(0, trail.points.length - maxTrailPoints);
-    }
-
-    startWaterAnimation();
   };
 
   const queueWaterMark = () => {
@@ -480,32 +446,6 @@ if (!prefersReducedMotion.matches) {
     }
 
     startWaterAnimation();
-  };
-
-  const updateWakePoint = (store, key, x, y, force = 1) => {
-    const previous = store.get(key);
-    const now = performance.now();
-
-    if (!previous) {
-      store.set(key, {
-        x,
-        y,
-        lastAt: now,
-        trail: createWakeTrail(x, y, force),
-      });
-      return;
-    }
-
-    const dx = x - previous.x;
-    const dy = y - previous.y;
-    const distance = Math.hypot(dx, dy);
-
-    if (distance >= wakeDistance || now - previous.lastAt > 90) {
-      const trail = now - previous.lastAt > 260 ? createWakeTrail(previous.x, previous.y, force) : previous.trail;
-
-      addTrailPoint(trail, x, y, force + Math.min(0.42, distance / 120));
-      store.set(key, { x, y, lastAt: now, trail });
-    }
   };
 
   const drawWaterMark = (context, mark, now) => {
@@ -550,60 +490,6 @@ if (!prefersReducedMotion.matches) {
     return true;
   };
 
-  const drawTrailPath = (context, points) => {
-    context.beginPath();
-    context.moveTo(points[0].x, points[0].y);
-
-    for (let index = 1; index < points.length - 1; index += 1) {
-      const current = points[index];
-      const next = points[index + 1];
-      const midX = (current.x + next.x) / 2;
-      const midY = (current.y + next.y) / 2;
-
-      context.quadraticCurveTo(current.x, current.y, midX, midY);
-    }
-
-    const last = points[points.length - 1];
-
-    context.lineTo(last.x, last.y);
-  };
-
-  const drawWakeTrail = (context, trail, now) => {
-    trail.points = trail.points.filter((point) => now - point.at < wakeDuration);
-
-    if (trail.points.length < 2) {
-      return trail.points.length === 1 && now - trail.points[0].at < 300;
-    }
-
-    const newest = trail.points[trail.points.length - 1];
-    const ageProgress = Math.min(1, (now - newest.at) / wakeDuration);
-    const fade = 1 - ageProgress;
-    const force = trail.force * fade;
-
-    context.save();
-    context.lineCap = "round";
-    context.lineJoin = "round";
-
-    drawTrailPath(context, trail.points);
-    context.strokeStyle = `rgba(109, 219, 255, ${0.1 * force})`;
-    context.lineWidth = 30 * force + 6;
-    context.stroke();
-
-    drawTrailPath(context, trail.points);
-    context.strokeStyle = `rgba(224, 255, 255, ${0.22 * force})`;
-    context.lineWidth = 16 * force + 4;
-    context.stroke();
-
-    drawTrailPath(context, trail.points);
-    context.strokeStyle = `rgba(255, 255, 255, ${0.3 * force})`;
-    context.lineWidth = 3.2 * force + 1;
-    context.stroke();
-
-    context.restore();
-
-    return true;
-  };
-
   function startWaterAnimation() {
     if (!wakeAnimationId) {
       wakeAnimationId = window.requestAnimationFrame(drawWakes);
@@ -625,13 +511,7 @@ if (!prefersReducedMotion.matches) {
       }
     }
 
-    for (let index = wakeTrails.length - 1; index >= 0; index -= 1) {
-      if (!drawWakeTrail(rippleContext, wakeTrails[index], now)) {
-        wakeTrails.splice(index, 1);
-      }
-    }
-
-    if (wakeTrails.length > 0 || waterMarks.length > 0) {
+    if (waterMarks.length > 0) {
       wakeAnimationId = window.requestAnimationFrame(drawWakes);
     } else {
       wakeAnimationId = 0;
@@ -663,54 +543,6 @@ if (!prefersReducedMotion.matches) {
     if (!waterMarkTimeoutId) {
       scheduleWaterMark();
     }
-  });
-
-  window.addEventListener("pointermove", (event) => {
-    const key = event.pointerType === "mouse" ? "mouse" : event.pointerId;
-
-    updateWakePoint(pointerPoints, key, event.clientX, event.clientY, event.pointerType === "touch" ? 1.18 : 1);
-
-    if (event.pointerType === "mouse") {
-      lastMousePoint = { x: event.clientX, y: event.clientY };
-    }
-  }, { passive: true });
-
-  window.addEventListener("wheel", (event) => {
-    const x = Number.isFinite(event.clientX) ? event.clientX : lastMousePoint?.x ?? window.innerWidth / 2;
-    const y = Number.isFinite(event.clientY) ? event.clientY : lastMousePoint?.y ?? window.innerHeight / 2;
-    const dx = event.deltaX || 0;
-    const dy = event.deltaY || 0;
-    const distance = Math.hypot(dx, dy);
-
-    if (distance > 0) {
-      const unitX = dx / distance;
-      const unitY = dy / distance;
-      const trail = createWakeTrail(x - unitX * 18, y - unitY * 18, 1.18);
-
-      addTrailPoint(trail, x + unitX * 18, y + unitY * 18, 1.24);
-    }
-  }, { passive: true });
-
-  window.addEventListener("touchmove", (event) => {
-    Array.from(event.changedTouches).forEach((touch) => {
-      updateWakePoint(touchPoints, touch.identifier, touch.clientX, touch.clientY, 1.22);
-    });
-  }, { passive: true });
-
-  const forgetTouchPoint = (event) => {
-    Array.from(event.changedTouches).forEach((touch) => {
-      touchPoints.delete(touch.identifier);
-    });
-  };
-
-  window.addEventListener("touchend", forgetTouchPoint, { passive: true });
-  window.addEventListener("touchcancel", forgetTouchPoint, { passive: true });
-  window.addEventListener("pointercancel", (event) => {
-    pointerPoints.delete(event.pointerId);
-  }, { passive: true });
-  window.addEventListener("blur", () => {
-    pointerPoints.clear();
-    touchPoints.clear();
   });
 
   const bubbleLayer = document.createElement("div");

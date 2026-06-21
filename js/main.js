@@ -62,7 +62,7 @@ if (profileNameBubbles.length > 0) {
       restoreProfileNameIds.set(profileNameBubble, window.setTimeout(() => {
         profileNameBubble.classList.remove("is-popped");
         restoreProfileNameIds.delete(profileNameBubble);
-      }, 1600));
+      }, 3200));
     });
   });
 }

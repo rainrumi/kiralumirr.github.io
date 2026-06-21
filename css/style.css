@@ -335,6 +335,7 @@ h4 {
 
 #profile .two-column {
   align-items: center;
+  column-gap: 48px;
 }
 
 .profile-heading .section-label {
@@ -369,7 +370,7 @@ h4 {
   position: relative;
   display: grid;
   width: 30px;
-  height: 36px;
+  height: 30px;
   padding: 0;
   place-items: center;
   border: 1px solid rgba(224, 255, 255, 0.6);
@@ -1320,7 +1321,7 @@ h4 {
   .profile-name-bubble,
   .profile-name-char,
   .profile-name-pop,
-  .profile-name-char.is-popped .profile-name-pop {
+  .profile-name-bubble.is-popped .profile-name-pop {
     animation: none;
     transition: none;
   }

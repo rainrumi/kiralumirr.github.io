@@ -1,7 +1,7 @@
 const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
 const pageTopButton = document.querySelector(".page-top-button");
-const profileNameCharacters = document.querySelectorAll(".profile-name-char");
+const profileNameBubbles = document.querySelectorAll(".profile-name-bubble");
 
 if (menuButton && siteNav) {
   menuButton.textContent = "メニューを開く";
@@ -48,20 +48,20 @@ if (pageTopButton) {
   window.addEventListener("scroll", updatePageTopButton, { passive: true });
 }
 
-if (profileNameCharacters.length > 0) {
+if (profileNameBubbles.length > 0) {
   const restoreProfileNameIds = new WeakMap();
 
-  profileNameCharacters.forEach((profileNameCharacter) => {
-    profileNameCharacter.addEventListener("click", () => {
-      if (profileNameCharacter.classList.contains("is-popped")) {
+  profileNameBubbles.forEach((profileNameBubble) => {
+    profileNameBubble.addEventListener("click", () => {
+      if (profileNameBubble.classList.contains("is-popped")) {
         return;
       }
 
-      profileNameCharacter.classList.add("is-popped");
-      window.clearTimeout(restoreProfileNameIds.get(profileNameCharacter));
-      restoreProfileNameIds.set(profileNameCharacter, window.setTimeout(() => {
-        profileNameCharacter.classList.remove("is-popped");
-        restoreProfileNameIds.delete(profileNameCharacter);
+      profileNameBubble.classList.add("is-popped");
+      window.clearTimeout(restoreProfileNameIds.get(profileNameBubble));
+      restoreProfileNameIds.set(profileNameBubble, window.setTimeout(() => {
+        profileNameBubble.classList.remove("is-popped");
+        restoreProfileNameIds.delete(profileNameBubble);
       }, 1600));
     });
   });

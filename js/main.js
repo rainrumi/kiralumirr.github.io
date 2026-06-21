@@ -1,6 +1,7 @@
 const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
 const pageTopButton = document.querySelector(".page-top-button");
+const profileNameBubble = document.querySelector(".profile-name-bubble");
 
 if (menuButton && siteNav) {
   menuButton.textContent = "メニューを開く";
@@ -45,6 +46,22 @@ if (pageTopButton) {
 
   updatePageTopButton();
   window.addEventListener("scroll", updatePageTopButton, { passive: true });
+}
+
+if (profileNameBubble) {
+  let restoreProfileNameId = 0;
+
+  profileNameBubble.addEventListener("click", () => {
+    if (profileNameBubble.classList.contains("is-popped")) {
+      return;
+    }
+
+    profileNameBubble.classList.add("is-popped");
+    window.clearTimeout(restoreProfileNameId);
+    restoreProfileNameId = window.setTimeout(() => {
+      profileNameBubble.classList.remove("is-popped");
+    }, 1600);
+  });
 }
 
 const workMarquees = document.querySelectorAll(".work-marquee");

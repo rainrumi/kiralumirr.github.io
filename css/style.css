@@ -925,10 +925,11 @@ h4 {
   margin: auto 0 0;
   padding-top: 12px;
   color: rgba(83, 111, 101, 0.72);
-  font-size: 0.74rem;
+  font-size: clamp(0.58rem, 1.4vw, 0.68rem);
   font-weight: 600;
-  line-height: 1.5;
+  line-height: 1.35;
   text-align: right;
+  white-space: nowrap;
 }
 
 .work-card:hover {

@@ -134,7 +134,22 @@ if (relatedPanels.length > 0) {
     const opener = target.closest(".work-related-link");
 
     if (opener) {
+      event.preventDefault();
       lastRelatedPanelOpener = opener;
+
+      const panelId = opener.getAttribute("data-related-panel") || opener.getAttribute("href")?.replace(/^#/, "");
+      const targetPanel = relatedPanels.find((panel) => panel.id === panelId);
+
+      if (!targetPanel) {
+        return;
+      }
+
+      if (window.location.hash !== `#${targetPanel.id}`) {
+        window.location.hash = targetPanel.id;
+      } else {
+        openRelatedPanel(targetPanel);
+      }
+
       return;
     }
 
@@ -507,6 +522,41 @@ document.querySelectorAll(".work-track").forEach((track) => {
     event.preventDefault();
     event.stopPropagation();
   }, true);
+
+  track.addEventListener("click", (event) => {
+    if (suppressClick || event.defaultPrevented) {
+      return;
+    }
+
+    const target = event.target;
+
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    const cardLink = target.closest(".work-card-link");
+
+    if (!cardLink || !track.contains(cardLink)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (cardLink.target === "_blank") {
+      const openedWindow = window.open(cardLink.href, "_blank");
+
+      if (openedWindow) {
+        openedWindow.opener = null;
+      } else {
+        window.location.href = cardLink.href;
+      }
+
+      return;
+    }
+
+    window.location.href = cardLink.href;
+  });
 
   workCarousels.push(() => {
     updatePosition(false);

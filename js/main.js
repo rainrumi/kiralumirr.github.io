@@ -2,6 +2,8 @@ const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
 const pageTopButton = document.querySelector(".page-top-button");
 const nameBubbles = document.querySelectorAll(".profile-name-bubble");
+const relatedPanels = Array.from(document.querySelectorAll(".related-panel"));
+let lastRelatedPanelOpener = null;
 
 if (menuButton && siteNav) {
   menuButton.textContent = "メニューを開く";
@@ -65,6 +67,104 @@ if (nameBubbles.length > 0) {
       }, 6400));
     });
   });
+}
+
+if (relatedPanels.length > 0) {
+  relatedPanels.forEach((panel) => {
+    panel.setAttribute("aria-hidden", "true");
+  });
+
+  const getHashPanel = () => {
+    const hashValue = window.location.hash.replace(/^#/, "");
+    let panelId = hashValue;
+
+    try {
+      panelId = decodeURIComponent(hashValue);
+    } catch {
+      panelId = hashValue;
+    }
+
+    return relatedPanels.find((panel) => panel.id === panelId) || null;
+  };
+
+  const closeRelatedPanels = (shouldRestoreFocus = false) => {
+    relatedPanels.forEach((panel) => {
+      panel.classList.remove("is-open");
+      panel.setAttribute("aria-hidden", "true");
+    });
+    document.body.classList.remove("is-related-panel-open");
+
+    if (shouldRestoreFocus && lastRelatedPanelOpener) {
+      lastRelatedPanelOpener.focus();
+    }
+  };
+
+  const openRelatedPanel = (targetPanel) => {
+    relatedPanels.forEach((panel) => {
+      const isTarget = panel === targetPanel;
+
+      panel.classList.toggle("is-open", isTarget);
+      panel.setAttribute("aria-hidden", String(!isTarget));
+    });
+
+    document.body.classList.add("is-related-panel-open");
+    window.setTimeout(() => {
+      targetPanel.focus({ preventScroll: true });
+    }, 0);
+  };
+
+  const syncRelatedPanel = (shouldRestoreFocus = false) => {
+    const targetPanel = getHashPanel();
+
+    if (targetPanel) {
+      openRelatedPanel(targetPanel);
+      return;
+    }
+
+    closeRelatedPanels(shouldRestoreFocus);
+  };
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    const opener = target.closest(".work-related-link");
+
+    if (opener) {
+      lastRelatedPanelOpener = opener;
+      return;
+    }
+
+    if (target.closest("[data-related-close]")) {
+      window.setTimeout(() => {
+        closeRelatedPanels(true);
+      }, 0);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !document.body.classList.contains("is-related-panel-open")) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (getHashPanel()) {
+      window.location.hash = "works";
+      return;
+    }
+
+    closeRelatedPanels(true);
+  });
+
+  window.addEventListener("hashchange", () => {
+    syncRelatedPanel(true);
+  });
+
+  syncRelatedPanel(false);
 }
 
 const workMarquees = document.querySelectorAll(".work-marquee");

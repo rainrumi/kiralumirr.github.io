@@ -887,6 +887,7 @@ h4 {
   --edge-opacity: 1;
   --edge-blur: 0px;
   --hover-offset: 0px;
+  position: relative;
   z-index: 0;
   flex: 0 0 var(--work-card-width);
   overflow: hidden;
@@ -930,6 +931,42 @@ h4 {
   flex: 1;
   flex-direction: column;
   padding: 20px;
+}
+
+.work-card-has-related .work-body {
+  padding-bottom: 54px;
+}
+
+.work-related-link {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 1px solid rgba(20, 64, 60, 0.2);
+  border-radius: 6px;
+  background: rgba(252, 255, 246, 0.86);
+  box-shadow: 0 8px 18px rgba(9, 88, 102, 0.15);
+  color: rgba(31, 74, 70, 0.86);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.work-related-link:hover,
+.work-related-link:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 22px rgba(9, 88, 102, 0.22);
+  color: rgba(13, 55, 55, 0.98);
+  transform: translateY(-1px);
 }
 
 .work-note {
@@ -1035,6 +1072,111 @@ h4 {
 .work-dot.is-active {
   background: rgba(243, 255, 189, 0.96);
   box-shadow: 0 0 0 4px rgba(243, 255, 189, 0.16), 0 0 14px rgba(238, 255, 255, 0.46);
+}
+
+body.is-related-panel-open {
+  overflow: hidden;
+}
+
+.related-panel-list {
+  display: contents;
+}
+
+.related-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: clamp(28px, 6vw, 72px);
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(238, 255, 189, 0.18), transparent 28%),
+    radial-gradient(circle at 82% 78%, rgba(142, 229, 255, 0.16), transparent 30%),
+    linear-gradient(145deg, rgba(15, 32, 30, 0.98), rgba(0, 7, 14, 0.98) 70%);
+  color: rgba(247, 255, 246, 0.94);
+}
+
+.related-panel:target,
+.related-panel.is-open {
+  display: block;
+}
+
+.related-panel-inner {
+  display: flex;
+  min-height: calc(100vh - clamp(56px, 12vw, 144px));
+  width: min(100%, 860px);
+  margin: 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+}
+
+.related-panel .section-label {
+  color: rgba(214, 255, 222, 0.72);
+}
+
+.related-panel h2 {
+  max-width: 14em;
+  margin: 0;
+  color: #fbfff4;
+  font-size: clamp(1.7rem, 5vw, 3.4rem);
+  line-height: 1.15;
+}
+
+.related-panel-close {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: 8px 14px;
+  border: 1px solid rgba(236, 255, 223, 0.5);
+  border-radius: 6px;
+  background: rgba(0, 7, 14, 0.58);
+  box-shadow: 0 12px 28px rgba(0, 5, 12, 0.28);
+  color: #f7ffe6;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.related-panel-close:hover,
+.related-panel-close:focus-visible {
+  border-color: rgba(244, 255, 210, 0.9);
+  background: rgba(22, 45, 42, 0.82);
+}
+
+.related-link-list {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 620px);
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related-link-list li,
+.related-link-list a {
+  color: rgba(247, 255, 246, 0.9);
+}
+
+.related-link-list li {
+  padding: 13px 14px;
+  border-left: 3px solid rgba(198, 217, 106, 0.82);
+  border-radius: 6px;
+  background: rgba(252, 255, 246, 0.08);
+  line-height: 1.7;
+}
+
+.related-link-list a {
+  font-weight: 700;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
 .link-list {
@@ -1288,6 +1430,20 @@ h4 {
     --work-card-width: min(66vw, 280px);
     margin-inline: -16px;
     padding: 72px 44px 96px;
+  }
+
+  .related-panel {
+    padding: 68px 18px 32px;
+  }
+
+  .related-panel-inner {
+    min-height: calc(100vh - 100px);
+    justify-content: flex-start;
+  }
+
+  .related-panel-close {
+    top: 14px;
+    right: 14px;
   }
 
   .hero-section {

@@ -62,7 +62,7 @@ if (nameBubbles.length > 0) {
       restoreNameBubbleIds.set(nameBubble, window.setTimeout(() => {
         nameBubble.classList.remove("is-popped");
         restoreNameBubbleIds.delete(nameBubble);
-      }, 3200));
+      }, 6400));
     });
   });
 }

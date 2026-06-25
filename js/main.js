@@ -2,6 +2,7 @@ const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
 const pageTopButton = document.querySelector(".page-top-button");
 const relatedBackButton = document.querySelector(".related-back-button");
+const footerNameBubbles = document.querySelector(".footer-name-bubbles");
 const nameBubbles = document.querySelectorAll(".profile-name-bubble");
 const relatedPanels = Array.from(document.querySelectorAll(".related-panel"));
 let lastRelatedPanelOpener = null;
@@ -53,19 +54,95 @@ if (pageTopButton) {
 
 if (nameBubbles.length > 0) {
   const restoreNameBubbleIds = new WeakMap();
+  let isNameCelebrating = false;
+  let nameCelebrationId = 0;
+
+  const resetNameBubbles = () => {
+    nameBubbles.forEach((nameBubble) => {
+      window.clearTimeout(restoreNameBubbleIds.get(nameBubble));
+      restoreNameBubbleIds.delete(nameBubble);
+      nameBubble.classList.remove("is-popped");
+    });
+
+    footerNameBubbles?.classList.remove("is-celebrating");
+    footerNameBubbles?.querySelectorAll(".profile-name-burst, .profile-name-nice").forEach((effectElement) => {
+      effectElement.remove();
+    });
+    isNameCelebrating = false;
+  };
+
+  const startNameCelebration = () => {
+    if (!footerNameBubbles || isNameCelebrating) {
+      return;
+    }
+
+    isNameCelebrating = true;
+    footerNameBubbles.classList.add("is-celebrating");
+
+    const containerRect = footerNameBubbles.getBoundingClientRect();
+
+    nameBubbles.forEach((nameBubble, bubbleIndex) => {
+      window.clearTimeout(restoreNameBubbleIds.get(nameBubble));
+      restoreNameBubbleIds.delete(nameBubble);
+
+      const bubbleRect = nameBubble.getBoundingClientRect();
+      const centerX = bubbleRect.left - containerRect.left + bubbleRect.width / 2;
+      const centerY = bubbleRect.top - containerRect.top + bubbleRect.height / 2;
+
+      for (let i = 0; i < 8; i += 1) {
+        const effectBubble = document.createElement("span");
+        const angle = (Math.PI * 2 * i) / 8 + bubbleIndex * 0.33;
+        const distance = 24 + ((bubbleIndex + i) % 5) * 8;
+        const size = 6 + ((bubbleIndex + i) % 4) * 3;
+        const driftX = Math.cos(angle) * distance;
+        const driftY = Math.sin(angle) * distance - 42 - (i % 3) * 12;
+        const delay = (i % 4) * 0.08 + (bubbleIndex % 3) * 0.04;
+
+        effectBubble.className = "profile-name-burst";
+        effectBubble.setAttribute("aria-hidden", "true");
+        effectBubble.style.setProperty("--burst-left", `${centerX}px`);
+        effectBubble.style.setProperty("--burst-top", `${centerY}px`);
+        effectBubble.style.setProperty("--burst-size", `${size}px`);
+        effectBubble.style.setProperty("--burst-x", `${driftX}px`);
+        effectBubble.style.setProperty("--burst-y", `${driftY}px`);
+        effectBubble.style.setProperty("--burst-delay", `${delay}s`);
+        footerNameBubbles.append(effectBubble);
+      }
+    });
+
+    const niceMessage = document.createElement("span");
+    niceMessage.className = "profile-name-nice";
+    niceMessage.setAttribute("aria-hidden", "true");
+    niceMessage.textContent = "nice!";
+    footerNameBubbles.append(niceMessage);
+
+    window.clearTimeout(nameCelebrationId);
+    nameCelebrationId = window.setTimeout(resetNameBubbles, 3000);
+  };
+
+  const maybeStartNameCelebration = () => {
+    if (Array.from(nameBubbles).every((nameBubble) => nameBubble.classList.contains("is-popped"))) {
+      startNameCelebration();
+    }
+  };
 
   nameBubbles.forEach((nameBubble) => {
     nameBubble.addEventListener("click", () => {
-      if (nameBubble.classList.contains("is-popped")) {
+      if (isNameCelebrating || nameBubble.classList.contains("is-popped")) {
         return;
       }
 
       nameBubble.classList.add("is-popped");
       window.clearTimeout(restoreNameBubbleIds.get(nameBubble));
       restoreNameBubbleIds.set(nameBubble, window.setTimeout(() => {
+        if (isNameCelebrating) {
+          return;
+        }
+
         nameBubble.classList.remove("is-popped");
         restoreNameBubbleIds.delete(nameBubble);
       }, 6400));
+      maybeStartNameCelebration();
     });
   });
 }

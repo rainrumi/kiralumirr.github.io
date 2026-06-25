@@ -144,19 +144,13 @@ if (relatedPanels.length > 0) {
         return;
       }
 
-      if (window.location.hash !== `#${targetPanel.id}`) {
-        window.location.hash = targetPanel.id;
-      } else {
-        openRelatedPanel(targetPanel);
-      }
-
+      openRelatedPanel(targetPanel);
       return;
     }
 
     if (target.closest("[data-related-close]")) {
-      window.setTimeout(() => {
-        closeRelatedPanels(true);
-      }, 0);
+      event.preventDefault();
+      closeRelatedPanels(true);
     }
   });
 
@@ -166,11 +160,6 @@ if (relatedPanels.length > 0) {
     }
 
     event.preventDefault();
-
-    if (getHashPanel()) {
-      window.location.hash = "works";
-      return;
-    }
 
     closeRelatedPanels(true);
   });

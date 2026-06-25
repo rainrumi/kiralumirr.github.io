@@ -1,6 +1,7 @@
 const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
 const pageTopButton = document.querySelector(".page-top-button");
+const relatedBackButton = document.querySelector(".related-back-button");
 const nameBubbles = document.querySelectorAll(".profile-name-bubble");
 const relatedPanels = Array.from(document.querySelectorAll(".related-panel"));
 let lastRelatedPanelOpener = null;
@@ -93,6 +94,10 @@ if (relatedPanels.length > 0) {
       panel.setAttribute("aria-hidden", "true");
     });
     document.body.classList.remove("is-related-panel-open");
+    relatedBackButton?.setAttribute("aria-hidden", "true");
+    if (relatedBackButton) {
+      relatedBackButton.tabIndex = -1;
+    }
 
     if (shouldRestoreFocus && lastRelatedPanelOpener) {
       lastRelatedPanelOpener.focus();
@@ -108,6 +113,10 @@ if (relatedPanels.length > 0) {
     });
 
     document.body.classList.add("is-related-panel-open");
+    relatedBackButton?.setAttribute("aria-hidden", "false");
+    if (relatedBackButton) {
+      relatedBackButton.tabIndex = 0;
+    }
     window.setTimeout(() => {
       targetPanel.focus({ preventScroll: true });
     }, 0);

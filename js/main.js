@@ -210,6 +210,7 @@ document.querySelectorAll(".work-track").forEach((track) => {
   let dragStartY = 0;
   let dragPointerId = null;
   let isDragging = false;
+  let hasPointerCaptureForDrag = false;
   let suppressClick = false;
 
   sortedCards.forEach((card) => {
@@ -392,6 +393,7 @@ document.querySelectorAll(".work-track").forEach((track) => {
     dragStartY = clientY;
     dragPointerId = pointerId;
     isDragging = true;
+    hasPointerCaptureForDrag = false;
     marquee.classList.add("is-dragging");
   };
 
@@ -405,6 +407,11 @@ document.querySelectorAll(".work-track").forEach((track) => {
 
     if (horizontalMove > verticalMove && horizontalMove > 8) {
       event.preventDefault();
+
+      if (!hasPointerCaptureForDrag && typeof PointerEvent !== "undefined" && event instanceof PointerEvent && marquee.setPointerCapture) {
+        marquee.setPointerCapture(pointerId);
+        hasPointerCaptureForDrag = true;
+      }
     }
   };
 
@@ -419,6 +426,7 @@ document.querySelectorAll(".work-track").forEach((track) => {
 
     isDragging = false;
     dragPointerId = null;
+    hasPointerCaptureForDrag = false;
     marquee.classList.remove("is-dragging");
 
     if (shouldSlide) {
@@ -436,10 +444,6 @@ document.querySelectorAll(".work-track").forEach((track) => {
     }
 
     beginDrag(event, event.clientX, event.clientY, event.pointerId);
-
-    if (isDragging && marquee.setPointerCapture) {
-      marquee.setPointerCapture(event.pointerId);
-    }
   });
 
   marquee.addEventListener("pointermove", (event) => {
@@ -455,9 +459,11 @@ document.querySelectorAll(".work-track").forEach((track) => {
       return;
     }
 
+    const shouldReleaseCapture = hasPointerCaptureForDrag;
+
     finishDrag(event, event.clientX, event.clientY, event.pointerId);
 
-    if (marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
+    if (shouldReleaseCapture && marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
       marquee.releasePointerCapture(event.pointerId);
     }
   });
@@ -467,9 +473,11 @@ document.querySelectorAll(".work-track").forEach((track) => {
       return;
     }
 
+    const shouldReleaseCapture = hasPointerCaptureForDrag;
+
     finishDrag(event, event.clientX, event.clientY, event.pointerId);
 
-    if (marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
+    if (shouldReleaseCapture && marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
       marquee.releasePointerCapture(event.pointerId);
     }
   });
@@ -522,41 +530,6 @@ document.querySelectorAll(".work-track").forEach((track) => {
     event.preventDefault();
     event.stopPropagation();
   }, true);
-
-  track.addEventListener("click", (event) => {
-    if (suppressClick || event.defaultPrevented) {
-      return;
-    }
-
-    const target = event.target;
-
-    if (!(target instanceof Element)) {
-      return;
-    }
-
-    const cardLink = target.closest(".work-card-link");
-
-    if (!cardLink || !track.contains(cardLink)) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (cardLink.target === "_blank") {
-      const openedWindow = window.open(cardLink.href, "_blank");
-
-      if (openedWindow) {
-        openedWindow.opener = null;
-      } else {
-        window.location.href = cardLink.href;
-      }
-
-      return;
-    }
-
-    window.location.href = cardLink.href;
-  });
 
   workCarousels.push(() => {
     updatePosition(false);

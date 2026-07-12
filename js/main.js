@@ -1,6 +1,7 @@
 const menuButton = document.querySelector(".menu-button");
 const siteNav = document.querySelector(".site-nav");
 const pageTopButton = document.querySelector(".page-top-button");
+const footerNameBubbles = document.querySelector(".footer-name-bubbles");
 const nameBubbles = document.querySelectorAll(".profile-name-bubble");
 const relatedPanels = Array.from(document.querySelectorAll(".related-panel"));
 let lastRelatedPanelOpener = null;
@@ -52,19 +53,95 @@ if (pageTopButton) {
 
 if (nameBubbles.length > 0) {
   const restoreNameBubbleIds = new WeakMap();
+  let isNameCelebrating = false;
+  let nameCelebrationId = 0;
+
+  const resetNameBubbles = () => {
+    nameBubbles.forEach((nameBubble) => {
+      window.clearTimeout(restoreNameBubbleIds.get(nameBubble));
+      restoreNameBubbleIds.delete(nameBubble);
+      nameBubble.classList.remove("is-popped");
+    });
+
+    footerNameBubbles?.classList.remove("is-celebrating");
+    footerNameBubbles?.querySelectorAll(".profile-name-burst, .profile-name-nice").forEach((effectElement) => {
+      effectElement.remove();
+    });
+    isNameCelebrating = false;
+  };
+
+  const startNameCelebration = () => {
+    if (!footerNameBubbles || isNameCelebrating) {
+      return;
+    }
+
+    isNameCelebrating = true;
+    footerNameBubbles.classList.add("is-celebrating");
+
+    const containerRect = footerNameBubbles.getBoundingClientRect();
+
+    nameBubbles.forEach((nameBubble, bubbleIndex) => {
+      window.clearTimeout(restoreNameBubbleIds.get(nameBubble));
+      restoreNameBubbleIds.delete(nameBubble);
+
+      const bubbleRect = nameBubble.getBoundingClientRect();
+      const centerX = bubbleRect.left - containerRect.left + bubbleRect.width / 2;
+      const centerY = bubbleRect.top - containerRect.top + bubbleRect.height / 2;
+
+      for (let i = 0; i < 8; i += 1) {
+        const effectBubble = document.createElement("span");
+        const angle = (Math.PI * 2 * i) / 8 + bubbleIndex * 0.33;
+        const distance = 24 + ((bubbleIndex + i) % 5) * 8;
+        const size = 6 + ((bubbleIndex + i) % 4) * 3;
+        const driftX = Math.cos(angle) * distance;
+        const driftY = Math.sin(angle) * distance - 42 - (i % 3) * 12;
+        const delay = (i % 4) * 0.08 + (bubbleIndex % 3) * 0.04;
+
+        effectBubble.className = "profile-name-burst";
+        effectBubble.setAttribute("aria-hidden", "true");
+        effectBubble.style.setProperty("--burst-left", `${centerX}px`);
+        effectBubble.style.setProperty("--burst-top", `${centerY}px`);
+        effectBubble.style.setProperty("--burst-size", `${size}px`);
+        effectBubble.style.setProperty("--burst-x", `${driftX}px`);
+        effectBubble.style.setProperty("--burst-y", `${driftY}px`);
+        effectBubble.style.setProperty("--burst-delay", `${delay}s`);
+        footerNameBubbles.append(effectBubble);
+      }
+    });
+
+    const niceMessage = document.createElement("span");
+    niceMessage.className = "profile-name-nice";
+    niceMessage.setAttribute("aria-hidden", "true");
+    niceMessage.textContent = "nice!";
+    footerNameBubbles.append(niceMessage);
+
+    window.clearTimeout(nameCelebrationId);
+    nameCelebrationId = window.setTimeout(resetNameBubbles, 3000);
+  };
+
+  const maybeStartNameCelebration = () => {
+    if (Array.from(nameBubbles).every((nameBubble) => nameBubble.classList.contains("is-popped"))) {
+      startNameCelebration();
+    }
+  };
 
   nameBubbles.forEach((nameBubble) => {
     nameBubble.addEventListener("click", () => {
-      if (nameBubble.classList.contains("is-popped")) {
+      if (isNameCelebrating || nameBubble.classList.contains("is-popped")) {
         return;
       }
 
       nameBubble.classList.add("is-popped");
       window.clearTimeout(restoreNameBubbleIds.get(nameBubble));
       restoreNameBubbleIds.set(nameBubble, window.setTimeout(() => {
+        if (isNameCelebrating) {
+          return;
+        }
+
         nameBubble.classList.remove("is-popped");
         restoreNameBubbleIds.delete(nameBubble);
       }, 6400));
+      maybeStartNameCelebration();
     });
   });
 }
@@ -93,7 +170,6 @@ if (relatedPanels.length > 0) {
       panel.setAttribute("aria-hidden", "true");
     });
     document.body.classList.remove("is-related-panel-open");
-
     if (shouldRestoreFocus && lastRelatedPanelOpener) {
       lastRelatedPanelOpener.focus();
     }
@@ -199,6 +275,7 @@ document.querySelectorAll(".work-track").forEach((track) => {
   let dragStartY = 0;
   let dragPointerId = null;
   let isDragging = false;
+  let hasPointerCaptureForDrag = false;
   let suppressClick = false;
 
   sortedCards.forEach((card) => {
@@ -381,6 +458,7 @@ document.querySelectorAll(".work-track").forEach((track) => {
     dragStartY = clientY;
     dragPointerId = pointerId;
     isDragging = true;
+    hasPointerCaptureForDrag = false;
     marquee.classList.add("is-dragging");
   };
 
@@ -394,6 +472,11 @@ document.querySelectorAll(".work-track").forEach((track) => {
 
     if (horizontalMove > verticalMove && horizontalMove > 8) {
       event.preventDefault();
+
+      if (!hasPointerCaptureForDrag && typeof PointerEvent !== "undefined" && event instanceof PointerEvent && marquee.setPointerCapture) {
+        marquee.setPointerCapture(pointerId);
+        hasPointerCaptureForDrag = true;
+      }
     }
   };
 
@@ -408,6 +491,7 @@ document.querySelectorAll(".work-track").forEach((track) => {
 
     isDragging = false;
     dragPointerId = null;
+    hasPointerCaptureForDrag = false;
     marquee.classList.remove("is-dragging");
 
     if (shouldSlide) {
@@ -425,10 +509,6 @@ document.querySelectorAll(".work-track").forEach((track) => {
     }
 
     beginDrag(event, event.clientX, event.clientY, event.pointerId);
-
-    if (isDragging && marquee.setPointerCapture) {
-      marquee.setPointerCapture(event.pointerId);
-    }
   });
 
   marquee.addEventListener("pointermove", (event) => {
@@ -444,9 +524,11 @@ document.querySelectorAll(".work-track").forEach((track) => {
       return;
     }
 
+    const shouldReleaseCapture = hasPointerCaptureForDrag;
+
     finishDrag(event, event.clientX, event.clientY, event.pointerId);
 
-    if (marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
+    if (shouldReleaseCapture && marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
       marquee.releasePointerCapture(event.pointerId);
     }
   });
@@ -456,9 +538,11 @@ document.querySelectorAll(".work-track").forEach((track) => {
       return;
     }
 
+    const shouldReleaseCapture = hasPointerCaptureForDrag;
+
     finishDrag(event, event.clientX, event.clientY, event.pointerId);
 
-    if (marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
+    if (shouldReleaseCapture && marquee.hasPointerCapture && marquee.hasPointerCapture(event.pointerId)) {
       marquee.releasePointerCapture(event.pointerId);
     }
   });
@@ -511,41 +595,6 @@ document.querySelectorAll(".work-track").forEach((track) => {
     event.preventDefault();
     event.stopPropagation();
   }, true);
-
-  track.addEventListener("click", (event) => {
-    if (suppressClick || event.defaultPrevented) {
-      return;
-    }
-
-    const target = event.target;
-
-    if (!(target instanceof Element)) {
-      return;
-    }
-
-    const cardLink = target.closest(".work-card-link");
-
-    if (!cardLink || !track.contains(cardLink)) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (cardLink.target === "_blank") {
-      const openedWindow = window.open(cardLink.href, "_blank");
-
-      if (openedWindow) {
-        openedWindow.opener = null;
-      } else {
-        window.location.href = cardLink.href;
-      }
-
-      return;
-    }
-
-    window.location.href = cardLink.href;
-  });
 
   workCarousels.push(() => {
     updatePosition(false);

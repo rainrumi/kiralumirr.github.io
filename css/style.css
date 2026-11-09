@@ -996,6 +996,8 @@ h4 {
 }
 
 .work-bubble {
+  --work-water-edge: #74e5ff;
+  --work-water-reflection: rgba(255, 255, 255, 0.9);
   position: relative;
   isolation: isolate;
   display: grid;
@@ -1004,16 +1006,13 @@ h4 {
   aspect-ratio: 1;
   padding: 6px;
   overflow: hidden;
-  border: 1px solid rgba(223, 250, 255, 0.42);
+  border: 1.5px solid var(--work-water-edge);
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 24% 16%, rgba(235, 253, 255, 0.12), transparent 42%),
-    radial-gradient(circle at 78% 88%, rgba(136, 234, 244, 0.1), transparent 48%);
+  background: transparent;
   box-shadow:
-    inset 0 1px 3px rgba(240, 253, 255, 0.68),
-    inset 0 -2px 7px rgba(133, 233, 245, 0.2),
-    0 12px 28px rgba(0, 8, 20, 0.16),
-    0 0 20px rgba(174, 237, 255, 0.08);
+    inset 0 1px 1px rgba(235, 253, 255, 0.7),
+    inset 0 -1px 2px rgba(76, 220, 255, 0.26),
+    0 0 14px rgba(71, 216, 255, 0.12);
   animation: work-bubble-float 7s ease-in-out infinite;
   animation-play-state: paused;
 }
@@ -1022,25 +1021,37 @@ h4 {
   animation-play-state: running;
 }
 
-.work-bubble::before {
+.work-bubble::before,
+.work-bubble::after {
   position: absolute;
-  inset: 0;
   z-index: 1;
+  border: 1px solid rgba(202, 248, 255, 0.8);
   border-radius: 50%;
+  background: var(--work-water-reflection);
   content: "";
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 9% 4% at 28% 15%, rgba(255, 255, 255, 0.82), rgba(241, 253, 255, 0.22) 48%, transparent 80%),
-    radial-gradient(circle at 20% 24%, rgba(248, 255, 255, 0.46) 0 1%, transparent 2.6%),
-    radial-gradient(ellipse 20% 8% at 73% 91%, rgba(176, 245, 255, 0.16), transparent 80%);
-  box-shadow: inset 0 0 12px rgba(210, 249, 255, 0.12);
+}
+
+.work-bubble::before {
+  top: 12%;
+  left: 18%;
+  width: 20%;
+  height: 8%;
+  transform: rotate(-32deg);
+}
+
+.work-bubble::after {
+  top: 26%;
+  left: 12%;
+  width: 6%;
+  height: 3.5%;
+  transform: rotate(-48deg);
 }
 
 @keyframes work-bubble-float {
   0%,
-  100% { transform: translate3d(-3px, 0, 0) rotate(-1deg); }
-  35% { transform: translate3d(4px, -13px, 0) rotate(1.5deg); }
-  70% { transform: translate3d(-5px, -6px, 0) rotate(-0.5deg); }
+  100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
 .work-thumbnail {
@@ -1052,7 +1063,6 @@ h4 {
   border-radius: 50%;
   object-fit: contain;
   background: transparent;
-  opacity: 0.94;
 }
 
 .work-body {

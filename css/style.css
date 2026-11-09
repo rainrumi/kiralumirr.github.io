@@ -1002,18 +1002,18 @@ h4 {
   flex-shrink: 0;
   width: var(--work-bubble-size);
   aspect-ratio: 1;
-  padding: 12px;
+  padding: 6px;
   overflow: hidden;
-  border: 1px solid rgba(223, 250, 255, 0.76);
+  border: 1px solid rgba(223, 250, 255, 0.42);
   border-radius: 50%;
   background:
-    radial-gradient(circle at 22% 14%, rgba(255, 244, 255, 0.38), transparent 40%),
-    radial-gradient(circle at 82% 88%, rgba(134, 230, 236, 0.3), transparent 46%),
-    rgba(138, 209, 230, 0.08);
+    radial-gradient(circle at 24% 16%, rgba(235, 253, 255, 0.12), transparent 42%),
+    radial-gradient(circle at 78% 88%, rgba(136, 234, 244, 0.1), transparent 48%);
   box-shadow:
-    inset 3px 4px 16px rgba(242, 222, 255, 0.38),
-    inset -5px -6px 20px rgba(153, 240, 242, 0.3),
-    0 0 26px rgba(185, 233, 255, 0.12);
+    inset 0 1px 3px rgba(240, 253, 255, 0.68),
+    inset 0 -2px 7px rgba(133, 233, 245, 0.2),
+    0 12px 28px rgba(0, 8, 20, 0.16),
+    0 0 20px rgba(174, 237, 255, 0.08);
   animation: work-bubble-float 7s ease-in-out infinite;
   animation-play-state: paused;
 }
@@ -1022,28 +1022,18 @@ h4 {
   animation-play-state: running;
 }
 
-.work-bubble::before,
-.work-bubble::after {
+.work-bubble::before {
   position: absolute;
+  inset: 0;
   z-index: 1;
   border-radius: 50%;
   content: "";
   pointer-events: none;
-}
-
-.work-bubble::before {
-  inset: 0;
   background:
-    radial-gradient(ellipse at 25% 16%, rgba(255, 255, 255, 0.7), transparent 17%),
-    linear-gradient(135deg, rgba(243, 216, 255, 0.14), transparent 42% 68%, rgba(188, 255, 234, 0.2));
-  box-shadow: inset 0 0 0 5px rgba(227, 249, 255, 0.12);
-}
-
-.work-bubble::after {
-  inset: 7%;
-  border-top: 3px solid rgba(255, 255, 255, 0.78);
-  border-right: 1px solid rgba(230, 255, 255, 0.32);
-  transform: rotate(-34deg);
+    radial-gradient(ellipse 9% 4% at 28% 15%, rgba(255, 255, 255, 0.82), rgba(241, 253, 255, 0.22) 48%, transparent 80%),
+    radial-gradient(circle at 20% 24%, rgba(248, 255, 255, 0.46) 0 1%, transparent 2.6%),
+    radial-gradient(ellipse 20% 8% at 73% 91%, rgba(176, 245, 255, 0.16), transparent 80%);
+  box-shadow: inset 0 0 12px rgba(210, 249, 255, 0.12);
 }
 
 @keyframes work-bubble-float {
@@ -1061,7 +1051,8 @@ h4 {
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: contain;
-  background: rgba(3, 16, 24, 0.32);
+  background: transparent;
+  opacity: 0.94;
 }
 
 .work-body {

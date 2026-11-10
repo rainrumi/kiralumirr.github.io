@@ -1001,12 +1001,13 @@ h4 {
   position: relative;
   isolation: isolate;
   display: grid;
+  place-items: center;
   flex-shrink: 0;
   width: var(--work-bubble-size);
   aspect-ratio: 1;
   padding: 6px;
-  overflow: hidden;
-  border: 1.5px solid var(--work-water-edge);
+  overflow: visible;
+  border: 1.5px solid transparent;
   border-radius: 50%;
   background: transparent;
   box-shadow:
@@ -1019,6 +1020,17 @@ h4 {
 
 .work-card.is-active .work-bubble {
   animation-play-state: running;
+}
+
+.work-bubble-rim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 1.5px solid var(--work-water-edge);
+  border-radius: inherit;
+  box-shadow: 0 0 4px rgba(71, 216, 255, 0.24);
+  filter: blur(0.7px);
+  pointer-events: none;
 }
 
 .work-bubble::before,
@@ -1063,6 +1075,20 @@ h4 {
   border-radius: 50%;
   object-fit: contain;
   background: transparent;
+  mask-image: radial-gradient(circle closest-side, #000 92%, transparent 100%);
+}
+
+/* 横長画像は全体を円内に収め、画像自体の四辺だけを薄くぼかす。 */
+.work-thumbnail-wide {
+  width: 84%;
+  height: auto;
+  max-height: 84%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  mask-image:
+    linear-gradient(to right, transparent, #000 2.5% 97.5%, transparent),
+    linear-gradient(to bottom, transparent, #000 5% 95%, transparent);
+  mask-composite: intersect;
 }
 
 .work-body {

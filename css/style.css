@@ -1124,8 +1124,14 @@ h4 {
 
 .work-body,
 .work-related-link {
-  cursor: text;
-  user-select: text;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.work-marquee.is-dragging .work-body,
+.work-marquee.is-dragging .work-related-link {
+  cursor: grabbing;
 }
 
 .work-body .work-meta {

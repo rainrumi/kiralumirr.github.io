@@ -997,7 +997,7 @@ h4 {
 
 .work-bubble {
   --work-water-edge: #74e5ff;
-  --work-water-reflection: rgba(255, 255, 255, 0.9);
+  --work-water-reflection: rgba(255, 255, 255, 0.45);
   position: relative;
   isolation: isolate;
   display: grid;
@@ -1025,7 +1025,7 @@ h4 {
 .work-bubble::after {
   position: absolute;
   z-index: 1;
-  border: 1px solid rgba(202, 248, 255, 0.8);
+  border: 1px solid rgba(202, 248, 255, 0.4);
   border-radius: 50%;
   background: var(--work-water-reflection);
   content: "";

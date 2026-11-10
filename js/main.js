@@ -454,10 +454,9 @@ document.querySelectorAll(".work-track").forEach((track) => {
   });
 
   const isSliderControl = (target) => target instanceof Element && target.closest(".work-slide-button, .work-dots");
-  const isSelectableWorkContent = (target) => target instanceof Element && target.closest(".work-body, .work-related-link");
 
   const beginDrag = (event, clientX, clientY, pointerId) => {
-    if (isSliderControl(event.target) || isSelectableWorkContent(event.target)) {
+    if (isSliderControl(event.target)) {
       return;
     }
 

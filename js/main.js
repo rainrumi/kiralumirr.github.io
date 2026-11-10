@@ -211,6 +211,12 @@ if (relatedPanels.length > 0) {
 
     if (opener) {
       event.preventDefault();
+      const selection = window.getSelection();
+
+      if (selection && !selection.isCollapsed && selection.containsNode(opener, true)) {
+        return;
+      }
+
       lastRelatedPanelOpener = opener;
 
       const panelId = opener.getAttribute("data-related-panel") || opener.getAttribute("href")?.replace(/^#/, "");
@@ -448,9 +454,10 @@ document.querySelectorAll(".work-track").forEach((track) => {
   });
 
   const isSliderControl = (target) => target instanceof Element && target.closest(".work-slide-button, .work-dots");
+  const isSelectableWorkContent = (target) => target instanceof Element && target.closest(".work-body, .work-related-link");
 
   const beginDrag = (event, clientX, clientY, pointerId) => {
-    if (isSliderControl(event.target)) {
+    if (isSliderControl(event.target) || isSelectableWorkContent(event.target)) {
       return;
     }
 

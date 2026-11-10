@@ -693,7 +693,6 @@ if (!prefersReducedMotion.matches) {
       x: -waterMarkMargin + Math.random() * (viewport.width + waterMarkMargin * 2),
       y: -waterMarkMargin + Math.random() * (viewport.height + waterMarkMargin * 2),
       scale: 1 + Math.random() * 9,
-      rotation: Math.random() * Math.PI,
       driftX: (Math.random() - 0.5) * 18,
       driftY: (Math.random() - 0.5) * 18,
       startedAt: performance.now(),
@@ -737,31 +736,27 @@ if (!prefersReducedMotion.matches) {
     const x = mark.x + mark.driftX * eased;
     const y = mark.y + mark.driftY * eased;
 
-    context.save();
-    context.translate(x, y);
-    context.rotate(mark.rotation);
-
     for (let ring = 0; ring < 3; ring += 1) {
       const ringProgress = Math.max(0, Math.min(1, progress + ring * 0.12));
       const radius = baseRadius * (1 + ringProgress * (1.1 + ring * 0.26));
 
       context.beginPath();
-      context.ellipse(0, 0, radius * (1.42 + ring * 0.08), radius * (0.72 + ring * 0.04), 0, 0, Math.PI * 2);
+      context.arc(x, y, radius, 0, Math.PI * 2);
       context.strokeStyle = `rgba(224, 255, 255, ${alpha * (1 - ring * 0.24)})`;
       context.lineWidth = Math.max(0.65, 1.6 - ring * 0.32);
       context.stroke();
     }
 
-    const haze = context.createRadialGradient(0, 0, baseRadius * 0.4, 0, 0, baseRadius * 2.4);
+    const hazeRadius = baseRadius * 2.4;
+    const haze = context.createRadialGradient(x, y, baseRadius * 0.4, x, y, hazeRadius);
 
     haze.addColorStop(0, `rgba(226, 255, 255, ${alpha * 0.08})`);
     haze.addColorStop(1, "rgba(226, 255, 255, 0)");
 
     context.beginPath();
-    context.ellipse(0, 0, baseRadius * 2.4, baseRadius * 1.1, 0, 0, Math.PI * 2);
+    context.arc(x, y, hazeRadius, 0, Math.PI * 2);
     context.fillStyle = haze;
     context.fill();
-    context.restore();
 
     return true;
   };
